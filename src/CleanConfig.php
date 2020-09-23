@@ -28,6 +28,8 @@ class CleanConfig
         $this->stopCleaningWhen = function (CleanConfig $cleanConfig) {
             return $cleanConfig->rowsDeletedInThisPass < $this->limit;
         };
+
+        $this->lockName = $this->convertQueryToLockName($this->query);
     }
 
     public function limit(int $limit)
@@ -63,5 +65,11 @@ class CleanConfig
         $this->rowsDeletedInThisPass = 0;
 
         return $this;
+    }
+
+    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
+    protected function convertQueryToLockName($query): string
+    {
+        return md5($query->toSql() . print_r($query->getBindings(), true));
     }
 }
