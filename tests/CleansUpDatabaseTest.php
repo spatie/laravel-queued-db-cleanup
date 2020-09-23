@@ -117,4 +117,15 @@ class CleansUpDatabaseTest extends TestCase
         dispatch($job);
         $this->assertEquals(0, TestModel::count());
     }
+
+    /** @test */
+    public function the_job_can_be_serialized()
+    {
+        $job = CleanDatabaseJobFactory::new()
+            ->usingQuery(TestModel::query())
+            ->deleteChunkSize(10)
+            ->getJob();
+
+        $this->assertIsString(serialize($job));
+    }
 }
