@@ -4,7 +4,6 @@ namespace Spatie\LaravelQueuedDbCleanup;
 
 use Closure;
 use Illuminate\Support\Facades\DB;
-use Opis\Closure\SerializableClosure;
 
 class CleanConfig
 {
