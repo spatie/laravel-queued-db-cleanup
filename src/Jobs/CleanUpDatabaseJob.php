@@ -3,6 +3,7 @@
 namespace Spatie\LaravelQueuedDbCleanup\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -12,7 +13,7 @@ use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
 
-class CleanUpDatabaseJob
+class CleanUpDatabaseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,6 +26,7 @@ class CleanUpDatabaseJob
 
     public function handle()
     {
+
         event(new CleanDatabasePassStarting($this->config));
 
         $numberOfRowsDeleted = $this->config->executeDeleteQuery();
@@ -52,6 +54,7 @@ class CleanUpDatabaseJob
 
     public function middleware()
     {
-        return [new AtomicJobMiddleware($this->config->lockName)];
+        return [];
+        return [new AtomicJobMiddleware($this->config)];
     }
 }

@@ -22,7 +22,7 @@ class CleanConfig
 
     public int $totalRowsDeleted = 0;
 
-    public Closure $stopWhen;
+    public ?string $stopWhen = null;
 
     public string $lockCacheStore;
 
@@ -30,13 +30,9 @@ class CleanConfig
 
     public function __construct()
     {
-        $this->lockCacheStore = config('queued-db-cleanup.lock.release_lock_after_seconds');
+        $this->lockCacheStore = config('queued-db-cleanup.lock.cache_store');
 
         $this->releaseLockAfterSeconds = config('queued-db-cleanup.lock.release_lock_after_seconds');
-
-        $this->stopWhen = function (CleanConfig $cleanConfig) {
-            return $cleanConfig->rowsDeletedInThisPass < $this->deleteChunkSize;
-        };
     }
 
     /**
@@ -52,6 +48,14 @@ class CleanConfig
         $this->deleteChunkSize = $chunkSize;
 
         $this->lockName = $this->convertQueryToLockName($query);
+
+        if ($this->stopWhen === null) {
+            $this->stopWhen(function (CleanConfig $cleanConfig) {
+                return $cleanConfig->rowsDeletedInThisPass < $this->deleteChunkSize;
+            });
+        }
+
+
     }
 
     public function executeDeleteQuery(): int
@@ -61,12 +65,19 @@ class CleanConfig
 
     public function stopWhen(callable $callable)
     {
-        $this->stopWhen = $callable;
+        $wrapper = new SerializableClosure($callable);
+
+        $this->stopWhen = serialize($wrapper);
     }
 
     public function shouldContinueCleaning(): bool
     {
-        return ! ($this->stopWhen)($this);
+        /** @var SerializableClosure $wrapper */
+        $wrapper = unserialize($this->stopWhen);
+
+        $stopWhen = $wrapper->getClosure();
+
+        return ! $stopWhen($this);
     }
 
     public function rowsDeletedInThisPass(int $rowsDeleted): self

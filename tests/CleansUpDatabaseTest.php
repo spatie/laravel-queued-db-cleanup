@@ -53,9 +53,9 @@ class CleansUpDatabaseTest extends TestCase
     {
         return [
             [100, 10, 0, 11],
-          //  [100, 10, 0, 11],
-          //  [99, 10, 0, 10],
-          //  [100, 5, 0, 21],
+            [100, 10, 0, 11],
+            [99, 10, 0, 10],
+            [100, 5, 0, 21],
         ];
     }
 
@@ -67,7 +67,9 @@ class CleansUpDatabaseTest extends TestCase
         CleanDatabaseJobFactory::new()
             ->usingQuery(TestModel::query())
             ->deleteChunkSize(10)
-            ->stopWhen(fn (CleanConfig $config) => $config->pass === 3)
+            ->stopWhen(function (CleanConfig $config) {
+                return $config->pass === 3;
+            })
             ->dispatch();
 
         $this->assertEquals(70, TestModel::count());

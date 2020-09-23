@@ -13,7 +13,7 @@ class CleanDatabaseJobFactory
     /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
     public $query;
 
-    public ?int $deleteChunkSize;
+    public ?int $deleteChunkSize = null;
 
     public static function new()
     {
