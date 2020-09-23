@@ -19,13 +19,6 @@ class TestCase extends Orchestra
         );
     }
 
-    protected function getPackageProviders($app)
-    {
-        return [
-            LaravelQueuedDbCleanupServiceProvider::class,
-        ];
-    }
-
     public function getEnvironmentSetUp($app)
     {
         $app['config']->set('database.default', 'sqlite');
