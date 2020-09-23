@@ -128,4 +128,20 @@ class CleansUpDatabaseTest extends TestCase
 
         $this->assertIsString(serialize($job));
     }
+
+    /** @test */
+    public function it_respects_the_bindings()
+    {
+        TestModel::factory()->count(10)->create();
+
+        CleanDatabaseJobFactory::new()
+            ->usingQuery(TestModel::query()->where('id', 1))
+            ->deleteChunkSize(10)
+            ->dispatch();
+
+        $this->assertEquals(9, TestModel::count());
+
+
+
+    }
 }
