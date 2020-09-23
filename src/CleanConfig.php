@@ -3,7 +3,6 @@
 namespace Spatie\LaravelQueuedDbCleanup;
 
 use Illuminate\Cache\Lock;
-use Illuminate\Cache\RedisLock;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Opis\Closure\SerializableClosure;
@@ -108,5 +107,4 @@ class CleanConfig
     {
         return md5($query->toSql() . print_r($query->getBindings(), true));
     }
-
 }
