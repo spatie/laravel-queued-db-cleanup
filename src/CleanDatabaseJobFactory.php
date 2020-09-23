@@ -29,7 +29,7 @@ class CleanDatabaseJobFactory
 
     public function deleteChunkSize(int $size): self
     {
-        $this->cleanConfig->limit($size);
+        $this->cleanConfig->deleteChunkSize($size);
 
         return $this;
     }
@@ -47,5 +47,12 @@ class CleanDatabaseJobFactory
     public function dispatch(): PendingDispatch
     {
         return dispatch($this->getJob());
+    }
+
+    public function continueUntilNoneRemaining()
+    {
+        $this->cleanConfig->stopCleaningWhen(function(CleanConfig $config) {
+            return $config->rowsDeletedInThisPass === 0;
+        });
     }
 }

@@ -9,7 +9,7 @@ class CleanConfig
     /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
     public $query;
 
-    public int $limit = 1000;
+    public int $deleteChunkSize = 1000;
 
     public string $lockName = '';
 
@@ -38,15 +38,15 @@ class CleanConfig
         $this->query = $query;
 
         $this->stopCleaningWhen = function (CleanConfig $cleanConfig) {
-            return $cleanConfig->rowsDeletedInThisPass < $this->limit;
+            return $cleanConfig->rowsDeletedInThisPass < $this->deleteChunkSize;
         };
 
         $this->lockName = $this->convertQueryToLockName($this->query);
     }
 
-    public function limit(int $limit)
+    public function deleteChunkSize(int $deleteChunkSize)
     {
-        $this->limit = $limit;
+        $this->deleteChunkSize = $deleteChunkSize;
 
         return $this;
     }
@@ -79,7 +79,7 @@ class CleanConfig
         return $this;
     }
 
-    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
+    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
     protected function convertQueryToLockName($query): string
     {
         return md5($query->toSql() . print_r($query->getBindings(), true));

@@ -31,8 +31,10 @@ class CleansUpDatabaseTest extends TestCase
 
         $this->assertEquals($remaining, TestModel::count());
 
-        Event::assertDispatched(function (CleanDatabaseCompleted $event) use ($passesPerformed) {
+        Event::assertDispatched(function (CleanDatabaseCompleted $event) use ($totalRecords, $passesPerformed) {
             $this->assertEquals($passesPerformed, $event->cleanConfig->pass);
+
+            $this->assertEquals($totalRecords, $event->cleanConfig->totalRowsDeleted);
 
             return true;
         });
@@ -46,5 +48,14 @@ class CleansUpDatabaseTest extends TestCase
             [99, 10, 0, 10],
             [100, 5, 0, 21],
         ];
+    }
+
+    public function it_can_use_a_custom_bla()
+    {
+        CleanDatabaseJobFactory::new()
+            ->usingQuery(TestModel::query())
+            ->deleteChunkSize(100)
+            ->continueUntilNoneRemaining()
+            ->dispatch();
     }
 }

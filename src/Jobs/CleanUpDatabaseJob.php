@@ -27,7 +27,7 @@ class CleanUpDatabaseJob
     {
         event(new CleanDatabasePassStarting($this->config));
 
-        $numberOfRowsDeleted = $this->config->query->limit($this->config->limit)->delete();
+        $numberOfRowsDeleted = $this->config->query->limit($this->config->deleteChunkSize)->delete();
 
         $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
