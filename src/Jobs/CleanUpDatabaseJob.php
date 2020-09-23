@@ -11,7 +11,6 @@ use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
-use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
 
 class CleanUpDatabaseJob implements ShouldQueue
 {
