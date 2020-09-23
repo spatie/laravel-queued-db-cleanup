@@ -10,7 +10,7 @@ class CleansUpDatabaseTest extends TestCase
     /** @test */
     public function it_can_delete_records()
     {
-        TestModel::factory()->count(100)->create();
+        TestModel::factory()->count(1000)->create();
 
         CleanDatabaseJobFactory::new()
             ->usingQuery(TestModel::query())
