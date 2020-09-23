@@ -1,11 +1,11 @@
-# Deleting millions of records without shooting yourself in the foot
+# Delete millions of records without shooting yourself in the foot
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-queued-db-cleanup.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-queued-db-cleanup)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/laravel-queued-db-cleanup/run-tests?label=tests)](https://github.com/spatie/laravel-queued-db-cleanup/actions?query=workflow%3Arun-tests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-queued-db-cleanup.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-queued-db-cleanup)
 
+In development...
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
 ## Support us
 
