@@ -27,9 +27,15 @@ class CleanUpDatabaseJob implements ShouldQueue
     public function handle()
     {
 
+        if (! $this->config->lock()->get()) {
+            return;
+        }
+
         event(new CleanDatabasePassStarting($this->config));
 
         $numberOfRowsDeleted = $this->config->executeDeleteQuery();
+
+        $this->config->lock()->forceRelease();
 
         $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
@@ -50,11 +56,5 @@ class CleanUpDatabaseJob implements ShouldQueue
         $this->config->incrementPass();
 
         dispatch(new CleanUpDatabaseJob($this->config));
-    }
-
-    public function middleware()
-    {
-        return [];
-        return [new AtomicJobMiddleware($this->config)];
     }
 }

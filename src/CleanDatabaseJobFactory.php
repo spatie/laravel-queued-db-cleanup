@@ -47,13 +47,13 @@ class CleanDatabaseJobFactory
 
     public function getJob(): CleanUpDatabaseJob
     {
+        $this->cleanConfig->usingQuery($this->query, $this->deleteChunkSize);
+
         return new CleanUpDatabaseJob($this->cleanConfig);
     }
 
     public function dispatch(): PendingDispatch
     {
-        $this->cleanConfig->usingQuery($this->query, $this->deleteChunkSize);
-
         return dispatch($this->getJob());
     }
 

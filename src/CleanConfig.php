@@ -2,6 +2,9 @@
 
 namespace Spatie\LaravelQueuedDbCleanup;
 
+use Illuminate\Cache\Lock;
+use Illuminate\Cache\RedisLock;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Opis\Closure\SerializableClosure;
 
@@ -97,9 +100,15 @@ class CleanConfig
         return $this;
     }
 
+    public function lock(): Lock
+    {
+        return Cache::store($this->lockCacheStore)->lock($this->lockName, $this->releaseLockAfterSeconds);
+    }
+
     /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
     protected function convertQueryToLockName($query): string
     {
         return md5($query->toSql() . print_r($query->getBindings(), true));
     }
+
 }

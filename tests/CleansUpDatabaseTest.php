@@ -98,4 +98,23 @@ class CleansUpDatabaseTest extends TestCase
             return true;
         });
     }
+
+    /** @test */
+    public function it_will_not_clean_if_it_cannot_get_the_lock()
+    {
+        TestModel::factory()->count(10)->create();
+
+        $job = CleanDatabaseJobFactory::new()
+            ->usingQuery(TestModel::query())
+            ->deleteChunkSize(10)
+            ->getJob();
+
+        $job->config->lock()->get();
+        dispatch($job);
+        $this->assertEquals(10, TestModel::count());
+
+        $job->config->lock()->forceRelease();
+        dispatch($job);
+        $this->assertEquals(0, TestModel::count());
+    }
 }
