@@ -6,49 +6,41 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Spatie\LaravelQueuedDbCleanup\CleanupConfig;
+use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
 use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
+use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 
 class CleanUpDatabaseJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $query;
+    public CleanConfig $config;
 
-    public CleanupConfig $config;
-
-    public string $name;
-
-    public function __construct(string $name, $query, CleanupConfig $config)
+    public function __construct(CleanConfig $cleanConfig)
     {
-        $this->query = $query;
-
-        $this->config = $config;
-
-        $this->name = $name;
+        $this->config = $cleanConfig;
     }
 
     public function handle()
     {
-        $numberOfRowsDeleted = $this->query->delete();
+        $numberOfRowsDeleted = $this->config->query->limit($this->config->limit)->delete();
 
-        if ($numberOfRowsDeleted === 0) {
-            return;
-        }
+        $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
-        if ($this->config->shouldContinue($numberOfRowsDeleted)) {
+        if ($this->config->shouldContinueCleaning()) {
             $this->redispatch();
         }
     }
 
     protected function redispatch()
     {
-        dispatch(new CleanUpDatabaseJob($this->name, $this->query, $this->config));
+        $this->config->incrementPass();
+
+        dispatch(new CleanUpDatabaseJob($this->config));
     }
 
     public function middleware()
     {
-        return [new AtomicJobMiddleware($this->name)];
+        return [new AtomicJobMiddleware($this->config->lockName)];
     }
-
 }
