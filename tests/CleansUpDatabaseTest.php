@@ -12,11 +12,12 @@ class CleansUpDatabaseTest extends TestCase
     {
         TestModel::factory()->count(100)->create();
 
-        $this->assertEquals(100, TestModel::count());
-
         CleanDatabaseJobFactory::new()
             ->usingQuery(TestModel::query())
-            ->deleteChunkSize(1000)
+            ->deleteChunkSize(100)
             ->dispatch();
+
+        $this->assertEquals(0, TestModel::count());
+
     }
 }

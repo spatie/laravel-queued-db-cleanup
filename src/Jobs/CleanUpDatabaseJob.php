@@ -7,6 +7,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
+use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassCompleted;
+use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
 
 class CleanUpDatabaseJob
@@ -22,17 +24,26 @@ class CleanUpDatabaseJob
 
     public function handle()
     {
+        event(new CleanDatabasePassStarting($this->config));
+
         $numberOfRowsDeleted = $this->config->query->limit($this->config->limit)->delete();
 
         $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
         if ($this->config->shouldContinueCleaning()) {
             $this->redispatch();
+
+            return;
         }
+
+        event(new CleanDatabasePassCompleted($this->config));
+        event(new CleanDatabasePassCompleted($this->config));
     }
 
     protected function redispatch()
     {
+        event(new CleanDatabasePassCompleted($this->config));
+
         $this->config->incrementPass();
 
         dispatch(new CleanUpDatabaseJob($this->config));
