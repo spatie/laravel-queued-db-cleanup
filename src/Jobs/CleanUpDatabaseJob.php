@@ -25,34 +25,41 @@ class CleanUpDatabaseJob implements ShouldQueue
 
     public function handle()
     {
-        if (! $this->config->lock()->get()) {
+        if (!$this->config->lock()->get()) {
             return;
         }
 
-        event(new CleanDatabasePassStarting($this->config));
-
-        $numberOfRowsDeleted = $this->config->executeDeleteQuery();
+        $numberOfRowsDeleted = $this->performCleaning();
 
         $this->config->lock()->forceRelease();
 
         $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
-        if ($this->config->shouldContinueCleaning()) {
-            $this->redispatch();
-
-            return;
-        }
-
-        event(new CleanDatabasePassCompleted($this->config));
-        event(new CleanDatabaseCompleted($this->config));
+        $this->config->shouldContinueCleaning()
+            ? $this->continueCleaning()
+            : $this->finishCleanup();
     }
 
-    protected function redispatch()
+    protected function performCleaning(): int
+    {
+        event(new CleanDatabasePassStarting($this->config));
+
+        return $this->config->executeDeleteQuery();
+    }
+
+    protected function continueCleaning()
     {
         event(new CleanDatabasePassCompleted($this->config));
 
         $this->config->incrementPass();
 
         dispatch(new CleanUpDatabaseJob($this->config));
+    }
+
+    protected function finishCleanup()
+    {
+        event(new CleanDatabasePassCompleted($this->config));
+
+        event(new CleanDatabaseCompleted($this->config));
     }
 }
