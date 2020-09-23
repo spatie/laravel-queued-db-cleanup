@@ -2,6 +2,8 @@
 
 namespace Spatie\LaravelQueuedDbCleanup;
 
+use Closure;
+
 class CleanConfig
 {
     /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
@@ -17,8 +19,18 @@ class CleanConfig
 
     public int $totalRowsDeleted = 0;
 
-    /** @var callable */
-    public $stopCleaningWhen;
+    public Closure $stopCleaningWhen;
+
+    public string $lockCacheStore;
+
+    public int $releaseLockAfterSeconds;
+
+    public function __construct()
+    {
+        $this->lockCacheStore = config('queued-db-cleanup.lock.release_lock_after_seconds');
+
+        $this->releaseLockAfterSeconds = config('queued-db-cleanup.lock.release_lock_after_seconds');
+    }
 
     /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
     public function usingQuery($query)

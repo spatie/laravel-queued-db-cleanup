@@ -3,20 +3,22 @@
 namespace Spatie\LaravelQueuedDbCleanup\Jobs\Middleware;
 
 use Illuminate\Support\Facades\Cache;
+use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 
 class AtomicJobMiddleware
 {
-    protected string $lockName;
+    protected CleanConfig $cleanConfig;
 
-    public function __construct(string $lockName)
+    public function __construct(CleanConfig $cleanConfig)
     {
-        $this->lockName = $lockName;
+        $this->cleanConfig = $cleanConfig;
     }
 
     public function handle($job, $next)
     {
         /** @var \Illuminate\Cache\RedisLock $lock */
-        $lock = Cache::store('redis')->lock("{$this->lockName}_lock", 10 * 60);
+        $lock = Cache::store($this->cleanConfig->lockCacheStore)
+            ->lock("{$this->cleanConfig->lockName}_lock", $this->cleanConfig->releaseLockAfterSeconds);
 
         if (! $lock->get()) {
             $job->delete();

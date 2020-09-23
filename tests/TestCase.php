@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\LaravelQueuedDbCleanup\LaravelQueuedDbCleanupServiceProvider;
+use Spatie\Skeleton\SkeletonServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -16,6 +18,13 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Spatie\\LaravelQueuedDbCleanup\\Tests\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+    }
+
+    protected function getPackageProviders($app)
+    {
+        return [
+            LaravelQueuedDbCleanupServiceProvider::class,
+        ];
     }
 
     public function getEnvironmentSetUp($app)
