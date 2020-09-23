@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelQueuedDbCleanup;
 
+use Closure;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Spatie\LaravelQueuedDbCleanup\Jobs\CleanUpDatabaseJob;
 
@@ -49,10 +50,10 @@ class CleanDatabaseJobFactory
         return dispatch($this->getJob());
     }
 
-    public function continueUntilNoneRemaining()
+    public function stopWhen(Closure $closure): self
     {
-        $this->cleanConfig->stopCleaningWhen(function(CleanConfig $config) {
-            return $config->rowsDeletedInThisPass === 0;
-        });
+        $this->cleanConfig->stopCleaningWhen($closure);
+
+        return $this;
     }
 }

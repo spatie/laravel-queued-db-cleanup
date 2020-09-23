@@ -3,6 +3,7 @@
 namespace Spatie\LaravelQueuedDbCleanup\Tests;
 
 use Illuminate\Support\Facades\Event;
+use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
@@ -51,12 +52,28 @@ class CleansUpDatabaseTest extends TestCase
         ];
     }
 
-    public function it_can_use_a_custom_bla()
+    /** @test */
+    public function it_can_continue_deleting_until_a_specified_condition()
     {
+        Event::fake();
+
+        TestModel::factory()->count(100)->create();
+
         CleanDatabaseJobFactory::new()
             ->usingQuery(TestModel::query())
-            ->deleteChunkSize(100)
-            ->continueUntilNoneRemaining()
+            ->deleteChunkSize(10)
+            ->stopWhen(fn(CleanConfig $config) => $config->pass === 3)
             ->dispatch();
+
+        $this->assertEquals(70, TestModel::count());
+
+        Event::assertDispatched(function (CleanDatabaseCompleted $event) {
+            $this->assertEquals(3, $event->cleanConfig->pass);
+
+            $this->assertEquals(10, $event->cleanConfig->rowsDeletedInThisPass);
+            $this->assertEquals(30, $event->cleanConfig->totalRowsDeleted);
+
+            return true;
+        });
     }
 }
