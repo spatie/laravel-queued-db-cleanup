@@ -25,7 +25,7 @@ class CleanDatabaseJob implements ShouldQueue
 
     public function handle()
     {
-        if (!$this->config->lock()->get()) {
+        if (! $this->config->lock()->get()) {
             return;
         }
 
