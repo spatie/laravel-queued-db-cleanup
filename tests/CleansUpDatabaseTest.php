@@ -90,10 +90,10 @@ class CleansUpDatabaseTest extends TestCase
             ->deleteChunkSize(10)
             ->dispatch();
 
-        Event::assertDispatched(function(CleanDatabasePassStarting $event) {
-                $this->assertEquals(1, $event->cleanConfig->pass);
+        Event::assertDispatched(function (CleanDatabasePassStarting $event) {
+            $this->assertEquals(1, $event->cleanConfig->pass);
 
-                return true;
+            return true;
         });
     }
 }
