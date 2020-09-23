@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Spatie\LaravelQueuedDbCleanup\LaravelQueuedDbCleanupServiceProvider;
 
 class TestCase extends Orchestra
 {
