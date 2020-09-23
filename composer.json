@@ -28,7 +28,7 @@
     "autoload": {
         "psr-4": {
             "Spatie\\LaravelQueuedDbCleanup\\": "src",
-            "Spatie\\LaravelQueuedDbCleanup\\Tests\\Database\\Factories\\": "database/factories"
+            "Spatie\\LaravelQueuedDbCleanup\\Tests\\Database\\Factories\\": "tests/database/factories"
         }
     },
     "autoload-dev": {
