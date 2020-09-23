@@ -6,5 +6,4 @@ use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
 
 class ValidDatabaseCleanupJobClass extends CleanDatabaseJob
 {
-
 }
