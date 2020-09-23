@@ -53,8 +53,6 @@ class CleanConfig
                 return $cleanConfig->rowsDeletedInThisPass < $this->deleteChunkSize;
             });
         }
-
-
     }
 
     public function executeDeleteQuery(): int
