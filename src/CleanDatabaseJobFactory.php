@@ -5,6 +5,7 @@ namespace Spatie\LaravelQueuedDbCleanup;
 use Closure;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
+use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
 use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
 
 class CleanDatabaseJobFactory
@@ -15,6 +16,8 @@ class CleanDatabaseJobFactory
     public $query;
 
     public ?int $deleteChunkSize = null;
+
+    public string $jobClass;
 
     public static function new()
     {
@@ -29,6 +32,8 @@ class CleanDatabaseJobFactory
     /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
     public function __construct($query = null)
     {
+        $this->jobClass = config('queued-db-cleanup.clean_database_job_class');
+
         $this->cleanConfig = new CleanConfig();
 
         $this->query = $query;
@@ -49,9 +54,15 @@ class CleanDatabaseJobFactory
         return $this;
     }
 
-    public function shouldContinue(int $numberOfRowsDeleted): bool
+    public function useJobClass(string $databaseCleanupJobClass): self
     {
-        return true;
+        if (! $this->isValidDatabaseCleanupJobClass($databaseCleanupJobClass)) {
+            throw InvalidDatabaseCleanupJobClass::make($databaseCleanupJobClass);
+        }
+
+        $this->jobClass = $databaseCleanupJobClass;
+
+        return $this;
     }
 
     public function getJob(): CleanDatabaseJob
@@ -60,7 +71,7 @@ class CleanDatabaseJobFactory
 
         $this->cleanConfig->usingQuery($this->query, $this->deleteChunkSize);
 
-        return new CleanDatabaseJob($this->cleanConfig);
+        return new $this->jobClass($this->cleanConfig);
     }
 
     public function dispatch(): PendingDispatch
@@ -84,5 +95,14 @@ class CleanDatabaseJobFactory
         if (is_null($this->deleteChunkSize)) {
             throw CouldNotCreateJob::deleteChunkSizeNotSet();
         }
+    }
+
+    protected function isValidDatabaseCleanupJobClass(string $jobClass): bool
+    {
+        if ($jobClass === CleanDatabaseJob::class) {
+            return true;
+        }
+
+        return is_subclass_of($jobClass, CleanDatabaseJob::class);
     }
 }

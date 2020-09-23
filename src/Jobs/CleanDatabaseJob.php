@@ -18,9 +18,9 @@ class CleanDatabaseJob implements ShouldQueue
 
     public CleanConfig $config;
 
-    public function __construct(CleanConfig $cleanConfig)
+    public function __construct(CleanConfig $config)
     {
-        $this->config = $cleanConfig;
+        $this->config = $config;
     }
 
     public function handle()
@@ -47,7 +47,7 @@ class CleanDatabaseJob implements ShouldQueue
         return $this->config->executeDeleteQuery();
     }
 
-    protected function continueCleaning()
+    protected function continueCleaning(): void
     {
         event(new CleanDatabasePassCompleted($this->config));
 
@@ -56,7 +56,7 @@ class CleanDatabaseJob implements ShouldQueue
         dispatch(new CleanDatabaseJob($this->config));
     }
 
-    protected function finishCleanup()
+    protected function finishCleanup(): void
     {
         event(new CleanDatabasePassCompleted($this->config));
 

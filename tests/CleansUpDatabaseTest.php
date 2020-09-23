@@ -2,13 +2,18 @@
 
 namespace Spatie\LaravelQueuedDbCleanup\Tests;
 
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
+use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
+use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\InvalidDatabaseCleanupJobClass as InvalidDatabaseCleanupJobTestClass;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
+use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\ValidDatabaseCleanupJobClass;
+use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
 
 class CleansUpDatabaseTest extends TestCase
 {
@@ -140,6 +145,42 @@ class CleansUpDatabaseTest extends TestCase
             ->dispatch();
 
         $this->assertEquals(9, TestModel::count());
+    }
+
+    /** @test */
+    public function it_can_use_a_custom_database_cleanup_job_class()
+    {
+        Bus::fake();
+
+        CleanDatabaseJobFactory::new()
+            ->query(TestModel::query())
+            ->deleteChunkSize(10)
+            ->useJobClass(ValidDatabaseCleanupJobClass::class)
+            ->dispatch();
+
+        Bus::assertDispatched(ValidDatabaseCleanupJobClass::class);
+    }
+
+    /** @test */
+    public function the_default_database_cleanup_job_class_can_be_set()
+    {
+        Bus::fake();
+
+        CleanDatabaseJobFactory::new()
+            ->query(TestModel::query())
+            ->deleteChunkSize(10)
+            ->useJobClass(CleanDatabaseJob::class)
+            ->dispatch();
+
+        Bus::assertDispatched(CleanDatabaseJob::class);
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_an_invalid_job_class_is_used()
+    {
+        $this->expectException(InvalidDatabaseCleanupJobClass::class);
+
+        CleanDatabaseJobFactory::new()->useJobClass(InvalidDatabaseCleanupJobTestClass::class);
     }
 
     /** @test */
