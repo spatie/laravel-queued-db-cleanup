@@ -140,8 +140,5 @@ class CleansUpDatabaseTest extends TestCase
             ->dispatch();
 
         $this->assertEquals(9, TestModel::count());
-
-
-
     }
 }
