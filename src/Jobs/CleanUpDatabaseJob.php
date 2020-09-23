@@ -6,9 +6,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
-use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
+use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
 
 class CleanUpDatabaseJob
 {

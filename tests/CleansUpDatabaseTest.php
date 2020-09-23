@@ -3,7 +3,6 @@
 namespace Spatie\LaravelQueuedDbCleanup\Tests;
 
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
-use Spatie\LaravelQueuedDbCleanup\Commands\Concerns\CleansUpDatabase;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
 
 class CleansUpDatabaseTest extends TestCase

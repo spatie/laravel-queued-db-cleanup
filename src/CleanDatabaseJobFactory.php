@@ -48,6 +48,4 @@ class CleanDatabaseJobFactory
     {
         return dispatch($this->getJob());
     }
-
-
 }
