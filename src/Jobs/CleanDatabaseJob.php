@@ -12,7 +12,7 @@ use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 
-class CleanUpDatabaseJob implements ShouldQueue
+class CleanDatabaseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -53,7 +53,7 @@ class CleanUpDatabaseJob implements ShouldQueue
 
         $this->config->incrementPass();
 
-        dispatch(new CleanUpDatabaseJob($this->config));
+        dispatch(new CleanDatabaseJob($this->config));
     }
 
     protected function finishCleanup()

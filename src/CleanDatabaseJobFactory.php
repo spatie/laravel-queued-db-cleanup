@@ -4,7 +4,7 @@ namespace Spatie\LaravelQueuedDbCleanup;
 
 use Closure;
 use Illuminate\Foundation\Bus\PendingDispatch;
-use Spatie\LaravelQueuedDbCleanup\Jobs\CleanUpDatabaseJob;
+use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
 
 class CleanDatabaseJobFactory
 {
@@ -45,11 +45,11 @@ class CleanDatabaseJobFactory
         return true;
     }
 
-    public function getJob(): CleanUpDatabaseJob
+    public function getJob(): CleanDatabaseJob
     {
         $this->cleanConfig->usingQuery($this->query, $this->deleteChunkSize);
 
-        return new CleanUpDatabaseJob($this->cleanConfig);
+        return new CleanDatabaseJob($this->cleanConfig);
     }
 
     public function dispatch(): PendingDispatch
