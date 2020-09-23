@@ -6,10 +6,18 @@ use Illuminate\Support\Facades\Event;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
+use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
 
 class CleansUpDatabaseTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        Event::fake();
+    }
+
     /**
      * @test
      *
@@ -54,8 +62,6 @@ class CleansUpDatabaseTest extends TestCase
     /** @test */
     public function it_can_continue_deleting_until_a_specified_condition()
     {
-        Event::fake();
-
         TestModel::factory()->count(100)->create();
 
         CleanDatabaseJobFactory::new()
@@ -73,6 +79,21 @@ class CleansUpDatabaseTest extends TestCase
             $this->assertEquals(30, $event->cleanConfig->totalRowsDeleted);
 
             return true;
+        });
+    }
+
+    /** @test */
+    public function it_dispatches_a_start_event()
+    {
+        CleanDatabaseJobFactory::new()
+            ->usingQuery(TestModel::query())
+            ->deleteChunkSize(10)
+            ->dispatch();
+
+        Event::assertDispatched(function(CleanDatabasePassStarting $event) {
+                $this->assertEquals(1, $event->cleanConfig->pass);
+
+                return true;
         });
     }
 }
