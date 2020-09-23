@@ -10,6 +10,11 @@ class CleanDatabaseJobFactory
 {
     public CleanConfig $cleanConfig;
 
+    /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
+    public $query;
+
+    public ?int $deleteChunkSize;
+
     public static function new()
     {
         return new static();
@@ -23,14 +28,14 @@ class CleanDatabaseJobFactory
     /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
     public function usingQuery($query): self
     {
-        $this->cleanConfig->usingQuery($query);
+        $this->query = $query;
 
         return $this;
     }
 
     public function deleteChunkSize(int $size): self
     {
-        $this->cleanConfig->deleteChunkSize($size);
+        $this->deleteChunkSize = $size;
 
         return $this;
     }
@@ -47,6 +52,8 @@ class CleanDatabaseJobFactory
 
     public function dispatch(): PendingDispatch
     {
+        $this->cleanConfig->usingQuery($this->query, $this->deleteChunkSize);
+
         return dispatch($this->getJob());
     }
 
