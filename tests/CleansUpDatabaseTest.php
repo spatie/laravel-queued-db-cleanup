@@ -18,7 +18,8 @@ class CleansUpDatabaseTest extends TestCase
         int $totalRecords,
         int $chunkSize,
         int $remaining,
-        int $passesPerformed)
+        int $passesPerformed
+    )
     {
         Event::fake();
 
