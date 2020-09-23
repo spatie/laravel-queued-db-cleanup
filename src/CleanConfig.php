@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelQueuedDbCleanup;
 
+use Closure;
 use Illuminate\Cache\Lock;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -62,9 +63,9 @@ class CleanConfig
         return DB::delete($this->sql, $this->sqlBindings);
     }
 
-    public function stopWhen(callable $callable)
+    public function stopWhen(Closure $closure)
     {
-        $wrapper = new SerializableClosure($callable);
+        $wrapper = new SerializableClosure($closure);
 
         $this->stopWhen = serialize($wrapper);
     }
