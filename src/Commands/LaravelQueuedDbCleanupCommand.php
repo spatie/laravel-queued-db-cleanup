@@ -1,12 +1,12 @@
 <?php
 
-namespace Spatie\Skeleton\Commands;
+namespace Spatie\LaravelQueuedDbCleanup\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelQueuedDbCleanupCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-queued-db-cleanup';
 
     public $description = 'My command';
 
