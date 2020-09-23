@@ -20,8 +20,7 @@ class CleansUpDatabaseTest extends TestCase
         int $chunkSize,
         int $remaining,
         int $passesPerformed
-    )
-    {
+    ) {
         Event::fake();
 
         TestModel::factory()->count($totalRecords)->create();

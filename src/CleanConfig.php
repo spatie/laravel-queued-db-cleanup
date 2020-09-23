@@ -19,7 +19,7 @@ class CleanConfig
 
     public int $totalRowsDeleted = 0;
 
-    public Closure $stopCleaningWhen;
+    public Closure $stopWhen;
 
     public string $lockCacheStore;
 
@@ -37,7 +37,7 @@ class CleanConfig
     {
         $this->query = $query;
 
-        $this->stopCleaningWhen = function (CleanConfig $cleanConfig) {
+        $this->stopWhen = function (CleanConfig $cleanConfig) {
             return $cleanConfig->rowsDeletedInThisPass < $this->deleteChunkSize;
         };
 
@@ -51,14 +51,14 @@ class CleanConfig
         return $this;
     }
 
-    public function stopCleaningWhen(callable $callable)
+    public function stopWhen(callable $callable)
     {
-        $this->stopCleaningWhen = $callable;
+        $this->stopWhen = $callable;
     }
 
     public function shouldContinueCleaning(): bool
     {
-        return ! ($this->stopCleaningWhen)($this);
+        return ! ($this->stopWhen)($this);
     }
 
     public function rowsDeletedInThisPass(int $rowsDeleted): self
@@ -79,7 +79,7 @@ class CleanConfig
         return $this;
     }
 
-    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
+    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
     protected function convertQueryToLockName($query): string
     {
         return md5($query->toSql() . print_r($query->getBindings(), true));
