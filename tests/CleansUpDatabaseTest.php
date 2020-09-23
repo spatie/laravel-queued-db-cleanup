@@ -61,7 +61,7 @@ class CleansUpDatabaseTest extends TestCase
         CleanDatabaseJobFactory::new()
             ->usingQuery(TestModel::query())
             ->deleteChunkSize(10)
-            ->stopWhen(fn(CleanConfig $config) => $config->pass === 3)
+            ->stopWhen(fn (CleanConfig $config) => $config->pass === 3)
             ->dispatch();
 
         $this->assertEquals(70, TestModel::count());

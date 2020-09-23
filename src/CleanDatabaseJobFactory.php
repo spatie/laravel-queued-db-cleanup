@@ -52,7 +52,6 @@ class CleanDatabaseJobFactory
 
     public function stopWhen(Closure $closure): self
     {
-
         $this->cleanConfig->stopWhen($closure);
 
         return $this;
