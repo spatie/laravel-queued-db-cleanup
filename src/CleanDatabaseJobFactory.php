@@ -51,7 +51,7 @@ class CleanDatabaseJobFactory
 
     public function continueUntilNoneRemaining()
     {
-        $this->cleanConfig->stopCleaningWhen(function(CleanConfig $config) {
+        $this->cleanConfig->stopCleaningWhen(function (CleanConfig $config) {
             return $config->rowsDeletedInThisPass === 0;
         });
     }

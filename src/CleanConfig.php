@@ -79,7 +79,7 @@ class CleanConfig
         return $this;
     }
 
-    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
+    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
     protected function convertQueryToLockName($query): string
     {
         return md5($query->toSql() . print_r($query->getBindings(), true));
