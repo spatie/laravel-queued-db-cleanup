@@ -7,6 +7,7 @@ use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
+use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
 
 class CleansUpDatabaseTest extends TestCase
@@ -33,8 +34,7 @@ class CleansUpDatabaseTest extends TestCase
 
         TestModel::factory()->count($totalRecords)->create();
 
-        CleanDatabaseJobFactory::new()
-            ->usingQuery(TestModel::query())
+        CleanDatabaseJobFactory::forQuery(TestModel::query())
             ->deleteChunkSize($chunkSize)
             ->dispatch();
 
@@ -65,7 +65,7 @@ class CleansUpDatabaseTest extends TestCase
         TestModel::factory()->count(100)->create();
 
         CleanDatabaseJobFactory::new()
-            ->usingQuery(TestModel::query())
+            ->query(TestModel::query())
             ->deleteChunkSize(10)
             ->stopWhen(function (CleanConfig $config) {
                 return $config->pass === 3;
@@ -88,7 +88,7 @@ class CleansUpDatabaseTest extends TestCase
     public function it_dispatches_a_start_event()
     {
         CleanDatabaseJobFactory::new()
-            ->usingQuery(TestModel::query())
+            ->query(TestModel::query())
             ->deleteChunkSize(10)
             ->dispatch();
 
@@ -105,7 +105,7 @@ class CleansUpDatabaseTest extends TestCase
         TestModel::factory()->count(10)->create();
 
         $job = CleanDatabaseJobFactory::new()
-            ->usingQuery(TestModel::query())
+            ->query(TestModel::query())
             ->deleteChunkSize(10)
             ->getJob();
 
@@ -122,7 +122,7 @@ class CleansUpDatabaseTest extends TestCase
     public function the_job_can_be_serialized()
     {
         $job = CleanDatabaseJobFactory::new()
-            ->usingQuery(TestModel::query())
+            ->query(TestModel::query())
             ->deleteChunkSize(10)
             ->getJob();
 
@@ -135,10 +135,26 @@ class CleansUpDatabaseTest extends TestCase
         TestModel::factory()->count(10)->create();
 
         CleanDatabaseJobFactory::new()
-            ->usingQuery(TestModel::query()->where('id', 1))
+            ->query(TestModel::query()->where('id', 1))
             ->deleteChunkSize(10)
             ->dispatch();
 
         $this->assertEquals(9, TestModel::count());
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_no_query_was_set()
+    {
+        $this->expectException(CouldNotCreateJob::class);
+
+        CleanDatabaseJobFactory::new()->dispatch();
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_no_chunk_size_was_set()
+    {
+        $this->expectException(CouldNotCreateJob::class);
+
+        CleanDatabaseJobFactory::new()->query(TestModel::query())->dispatch();
     }
 }

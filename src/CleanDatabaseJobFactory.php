@@ -4,6 +4,7 @@ namespace Spatie\LaravelQueuedDbCleanup;
 
 use Closure;
 use Illuminate\Foundation\Bus\PendingDispatch;
+use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
 
 class CleanDatabaseJobFactory
@@ -20,13 +21,21 @@ class CleanDatabaseJobFactory
         return new static();
     }
 
-    public function __construct()
+    public static function forQuery($query)
     {
-        $this->cleanConfig = new CleanConfig();
+        return new static($query);
     }
 
     /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
-    public function usingQuery($query): self
+    public function __construct($query = null)
+    {
+        $this->cleanConfig = new CleanConfig();
+
+        $this->query = $query;
+    }
+
+    /** @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query */
+    public function query($query): self
     {
         $this->query = $query;
 
@@ -47,6 +56,8 @@ class CleanDatabaseJobFactory
 
     public function getJob(): CleanDatabaseJob
     {
+        $this->ensureValid();
+
         $this->cleanConfig->usingQuery($this->query, $this->deleteChunkSize);
 
         return new CleanDatabaseJob($this->cleanConfig);
@@ -62,5 +73,16 @@ class CleanDatabaseJobFactory
         $this->cleanConfig->stopWhen($closure);
 
         return $this;
+    }
+
+    protected function ensureValid(): void
+    {
+        if (is_null($this->query)) {
+            throw CouldNotCreateJob::queryNotSet();
+        }
+
+        if (is_null($this->deleteChunkSize)) {
+            throw CouldNotCreateJob::deleteChunkSizeNotSet();
+        }
     }
 }
