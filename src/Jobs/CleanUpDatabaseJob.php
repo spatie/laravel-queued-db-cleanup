@@ -7,6 +7,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
+use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Jobs\Middleware\AtomicJobMiddleware;
@@ -37,7 +38,7 @@ class CleanUpDatabaseJob
         }
 
         event(new CleanDatabasePassCompleted($this->config));
-        event(new CleanDatabasePassCompleted($this->config));
+        event(new CleanDatabaseCompleted($this->config));
     }
 
     protected function redispatch()
