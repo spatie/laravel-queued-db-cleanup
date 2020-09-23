@@ -8,6 +8,7 @@ use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
 use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
 
+// TODO: add support for adding a custom job name
 class CleanDatabaseJobFactory
 {
     public CleanConfig $cleanConfig;
