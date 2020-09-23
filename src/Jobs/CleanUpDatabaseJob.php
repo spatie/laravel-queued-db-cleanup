@@ -50,5 +50,4 @@ class CleanUpDatabaseJob
     {
         return [new AtomicJobMiddleware($this->name)];
     }
-
 }

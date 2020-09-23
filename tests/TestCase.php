@@ -35,7 +35,7 @@ class TestCase extends Orchestra
             'prefix' => '',
         ]);
 
-        Schema::create('test_models', function(Blueprint $table) {
+        Schema::create('test_models', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
         });
