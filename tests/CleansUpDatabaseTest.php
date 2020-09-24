@@ -2,7 +2,6 @@
 
 namespace Spatie\LaravelQueuedDbCleanup\Tests;
 
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
@@ -10,7 +9,6 @@ use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
-use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\InvalidDatabaseCleanupJobClass as InvalidDatabaseCleanupJobTestClass;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\ValidDatabaseCleanupJobClass;

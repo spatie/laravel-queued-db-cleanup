@@ -40,7 +40,7 @@ class TestCase extends Orchestra
             $table->timestamps();
         });
 
-        Schema::create('job_batches', function(Blueprint $table) {
+        Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
             $table->integer('total_jobs');
