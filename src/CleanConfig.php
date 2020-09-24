@@ -76,8 +76,6 @@ class CleanConfig
         return $this;
     }
 
-
-
     public function executeDeleteQuery(): int
     {
         return DB::delete($this->sql, $this->sqlBindings);
