@@ -4,13 +4,13 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/laravel-queued-db-cleanup/run-tests?label=tests)](https://github.com/spatie/laravel-queued-db-cleanup/actions?query=workflow%3Arun-tests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-queued-db-cleanup.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-queued-db-cleanup)
 
-When you want to delete many records in one go using Laravel there are a few pitfalls you need to be aware of:
+Deleting many database records in one go using Laravel has a few pitfalls you need to be aware of:
 
-- deleting records is possibly a slow operation that can take a long time
-- there's a possibility that the database will lock your entire table, other queries will need to wait
-- in a serverless environment, there's a fixed maximum execution time
+- deleting records is possibly a slow operation that can take a long time,
+- the delete query will acquire many row locks and possible lock your entire table, other queries will need to wait
+- even when managing query execution and cleanup, there's a fixed maximum execution time in a serverless environment
 
-The pitfalls described in more detail in [this post](https://flareapp.io/blog/7-how-to-safely-delete-records-in-massive-tables-on-aws-using-laravel) at the [Flare](https://flareapp.io/).
+The pitfalls described in more detail in [this post](https://flareapp.io/blog/7-how-to-safely-delete-records-in-massive-tables-on-aws-using-laravel) on the [Flare blog](https://flareapp.io/).
 
 This package offers a solution to safely delete many records in large tables. Here's an example:
 
@@ -22,6 +22,8 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
 ```
 
 The code above will dispatch a cleanup job that will delete the 1000 first records that are selected for the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
+
+We'll also make sure that this cleanup job never overlaps. This way the number of database connections is kept low. It also allows you the schedule this cleanup job repeatedly throug CRON without having to check for an existing cleanup process.
 
 By keeping the chunk size small the query executes faster, and potential table locks will not be held for long periods of time. The cleanup job will also finish fast, so you won't hit an execution time limit.
 
