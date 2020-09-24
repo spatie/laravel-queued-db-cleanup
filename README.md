@@ -85,7 +85,7 @@ This code above will dispatch a cleanup job that will delete the 1000 first reco
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
-    ->query(YourModel::query()->where('created_at', <,  now()->subMonth())
+    ->query(YourModel::query()->where('created_at', '<',  now()->subMonth()))
     ->deleteChunkSize(1000)
     ->dispatch();
 ```
@@ -104,7 +104,7 @@ Internally, the packages uses job batches. Using `getBatch` you can get the batc
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
-    ->query(YourModel::query()->where('created_at', <,  now()->subMonth())
+    ->query(YourModel::query()->where('created_at', '<',  now()->subMonth()))
     ->deleteChunkSize(1000)
     ->getBatch()
     ->onConnection('redis')
