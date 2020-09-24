@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelQueuedDbCleanup\Jobs;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,7 +15,7 @@ use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 
 class CleanDatabaseJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
 
     public CleanConfig $config;
 
@@ -25,6 +26,10 @@ class CleanDatabaseJob implements ShouldQueue
 
     public function handle()
     {
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         if (! $this->config->lock()->get()) {
             return;
         }
@@ -32,6 +37,8 @@ class CleanDatabaseJob implements ShouldQueue
         $numberOfRowsDeleted = $this->performCleaning();
 
         $this->config->lock()->forceRelease();
+
+
 
         $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
@@ -64,9 +71,8 @@ class CleanDatabaseJob implements ShouldQueue
 
         $this->config->incrementPass();
 
-        dispatch(new CleanDatabaseJob($this->config));
+        $this->batch()->add([new CleanDatabaseJob($this->config)]);
     }
-
 
     protected function finishCleanup(): void
     {

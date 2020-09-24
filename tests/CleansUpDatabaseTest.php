@@ -109,17 +109,21 @@ class CleansUpDatabaseTest extends TestCase
     {
         TestModel::factory()->count(10)->create();
 
+        $jobFactory = CleanDatabaseJobFactory::new()
+            ->query(TestModel::query())
+            ->deleteChunkSize(10);
+
         $job = CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
             ->deleteChunkSize(10)
             ->getJob();
 
         $job->config->lock()->get();
-        dispatch($job);
+        $jobFactory->dispatch();
         $this->assertEquals(10, TestModel::count());
 
         $job->config->lock()->forceRelease();
-        dispatch($job);
+        $jobFactory->dispatch();
         $this->assertEquals(0, TestModel::count());
     }
 
@@ -150,29 +154,13 @@ class CleansUpDatabaseTest extends TestCase
     /** @test */
     public function it_can_use_a_custom_database_cleanup_job_class()
     {
-        Bus::fake();
-
-        CleanDatabaseJobFactory::new()
+        $job = CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
             ->deleteChunkSize(10)
             ->jobClass(ValidDatabaseCleanupJobClass::class)
-            ->dispatch();
+            ->getJob();
 
-        Bus::assertDispatched(ValidDatabaseCleanupJobClass::class);
-    }
-
-    /** @test */
-    public function the_default_database_cleanup_job_class_can_be_set()
-    {
-        Bus::fake();
-
-        CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10)
-            ->jobClass(CleanDatabaseJob::class)
-            ->dispatch();
-
-        Bus::assertDispatched(CleanDatabaseJob::class);
+        $this->assertInstanceOf(ValidDatabaseCleanupJobClass::class, $job);
     }
 
     /** @test */

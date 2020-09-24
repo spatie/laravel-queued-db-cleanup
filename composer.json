@@ -1,9 +1,12 @@
 {
     "name": "spatie/laravel-queued-db-cleanup",
-    "description": "Deleting millions of records without shooting yourself in the foot",
+    "description": "Safely delete large numbers of records",
     "keywords": [
         "spatie",
-        "laravel-queued-db-cleanup"
+        "laravel-queued-db-cleanup",
+        "delete",
+        "eloquent",
+        "vapor",
     ],
     "homepage": "https://github.com/spatie/laravel-queued-db-cleanup",
     "license": "MIT",

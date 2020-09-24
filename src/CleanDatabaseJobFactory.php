@@ -3,7 +3,10 @@
 namespace Spatie\LaravelQueuedDbCleanup;
 
 use Closure;
+use Illuminate\Bus\Batch;
+use Illuminate\Bus\PendingBatch;
 use Illuminate\Foundation\Bus\PendingDispatch;
+use Illuminate\Support\Facades\Bus;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
 use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
@@ -89,9 +92,14 @@ class CleanDatabaseJobFactory
         return new $this->jobClass($this->cleanConfig);
     }
 
-    public function dispatch(): PendingDispatch
+    public function getBatch(): PendingBatch
     {
-        return dispatch($this->getJob());
+        return Bus::batch([$this->getJob()]);
+    }
+
+    public function dispatch(): Batch
+    {
+        return $this->getBatch()->dispatch();
     }
 
     public function stopWhen(Closure $closure): self
