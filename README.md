@@ -21,9 +21,9 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
     ->dispatch();
 ```
 
-The code above will dispatch a cleanup job that will delete the 1000 first records that are selected for the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
+The code above will dispatch a cleanup job that will delete the first 1000 records that are selected by the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
 
-By keeping the chunk size small the query executes faster, and potential table locks will not be held for long periods of time. The cleanup job will also finish fast, so you won't hit an execution time limit.
+By keeping the chunk size small the query executes faster and potential table locks will not be held for long periods of time. The cleanup job will also finish fast, so you won't hit an execution time limit.
 
 ## Support us
 
@@ -45,7 +45,7 @@ composer require spatie/laravel-queued-db-cleanup
 
 The package uses a lock to prevent multiple deletions for the same query to be executed at the same time. We recommend using redis to store the lock.
 
-Behind the scenes this package leverages [job batches](https://laravel.com/docs/master/queues#job-batching). Make sure your created the batches table mentioned in the Laravel documentation.
+Behind the scenes this package leverages [job batches](https://laravel.com/docs/master/queues#job-batching). Make sure you have created the batches table mentioned in the Laravel documentation.
 
 Optionally, you can publish the config file with:
 ```bash
@@ -79,7 +79,7 @@ return [
 
 ## Usage
 
-This code above will dispatch a cleanup job that will delete the 1000 first records that are selected for the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
+This code will dispatch a cleanup job that will delete the first 1000 records that are selected by the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
@@ -98,7 +98,7 @@ If a scheduled task starts a cleanup process while another one is still running,
 
 ### Customizing the queue and connection name
 
-Internally, the packages uses job batches. Using `getBatch` you can get the batch and call methods like `onConnection` and `onQueue` on it. Don't forget to dispatch the batch at the end, by calling `dispatch()`.
+Internally, the package uses job batches. Using `getBatch` you can get the batch and call methods like `onConnection` and `onQueue` on it. Don't forget to dispatch the batch at the end, by calling `dispatch()`.
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
@@ -112,7 +112,7 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
 
 ### Manually stopping the cleanup process
 
-By default, the cleanup jobs will not redispatch themselves anymore when they detect that they've deleted less records than the chunk size. You can customize this behaviour by calling `stopWhen`. It should receive a closure. If the closure returns `true` the cleanup will stop.
+By default, the cleanup jobs will not redispatch themselves anymore when they detect that they've deleted fewer records than the chunk size. You can customize this behaviour by calling `stopWhen`. It should receive a closure. If the closure returns `true` the cleanup will stop.
 
 ```php
 CleanDatabaseJobFactory::forQuery(YourModel::query())
@@ -152,7 +152,7 @@ Somewhere else in your codebase you could retrieve the stored batch id and use i
 
 ## Events
 
-You can listen for these events. They all have one public property `cleanConfig` which is an instance of `Spatie\LaravelQueuedDbCleanup\CleanConfig`
+You can listen for these events. They all have one public property, `cleanConfig`, which is an instance of `Spatie\LaravelQueuedDbCleanup\CleanConfig`.
 
 ### Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting
 
