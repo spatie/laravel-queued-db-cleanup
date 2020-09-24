@@ -40,6 +40,17 @@ class CleanDatabaseJob implements ShouldQueue
             : $this->finishCleanup();
     }
 
+    public function tags()
+    {
+        return $this->config->tags;
+    }
+
+    public function displayName()
+    {
+        return $this->config->displayName ?? static::class;
+    }
+
+
     protected function performCleaning(): int
     {
         event(new CleanDatabasePassStarting($this->config));
@@ -55,6 +66,7 @@ class CleanDatabaseJob implements ShouldQueue
 
         dispatch(new CleanDatabaseJob($this->config));
     }
+
 
     protected function finishCleanup(): void
     {

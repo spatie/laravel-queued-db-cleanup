@@ -28,6 +28,10 @@ class CleanConfig
 
     public string $lockCacheStore;
 
+    public array $tags = [];
+
+    public ?string $displayName;
+
     public int $releaseLockAfterSeconds;
 
     public function __construct()
@@ -57,6 +61,22 @@ class CleanConfig
             });
         }
     }
+
+    public function displayName(string $displayName): self
+    {
+        $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    public function tags(array $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+
 
     public function executeDeleteQuery(): int
     {

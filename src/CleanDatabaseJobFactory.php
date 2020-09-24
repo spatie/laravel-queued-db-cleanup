@@ -55,13 +55,27 @@ class CleanDatabaseJobFactory
         return $this;
     }
 
-    public function useJobClass(string $databaseCleanupJobClass): self
+    public function jobClass(string $databaseCleanupJobClass): self
     {
         if (! $this->isValidDatabaseCleanupJobClass($databaseCleanupJobClass)) {
             throw InvalidDatabaseCleanupJobClass::make($databaseCleanupJobClass);
         }
 
         $this->jobClass = $databaseCleanupJobClass;
+
+        return $this;
+    }
+
+    public function displayName(string $displayName): self
+    {
+        $this->cleanConfig->displayName = $displayName;
+
+        return $this;
+    }
+
+    public function tags(array $tags): self
+    {
+        $this->cleanConfig->tags = $tags;
 
         return $this;
     }

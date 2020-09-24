@@ -155,7 +155,7 @@ class CleansUpDatabaseTest extends TestCase
         CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
             ->deleteChunkSize(10)
-            ->useJobClass(ValidDatabaseCleanupJobClass::class)
+            ->jobClass(ValidDatabaseCleanupJobClass::class)
             ->dispatch();
 
         Bus::assertDispatched(ValidDatabaseCleanupJobClass::class);
@@ -169,7 +169,7 @@ class CleansUpDatabaseTest extends TestCase
         CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
             ->deleteChunkSize(10)
-            ->useJobClass(CleanDatabaseJob::class)
+            ->jobClass(CleanDatabaseJob::class)
             ->dispatch();
 
         Bus::assertDispatched(CleanDatabaseJob::class);
@@ -180,7 +180,7 @@ class CleansUpDatabaseTest extends TestCase
     {
         $this->expectException(InvalidDatabaseCleanupJobClass::class);
 
-        CleanDatabaseJobFactory::new()->useJobClass(InvalidDatabaseCleanupJobTestClass::class);
+        CleanDatabaseJobFactory::new()->jobClass(InvalidDatabaseCleanupJobTestClass::class);
     }
 
     /** @test */
