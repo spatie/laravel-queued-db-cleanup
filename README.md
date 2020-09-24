@@ -45,11 +45,12 @@ You can install the package via composer:
 composer require spatie/laravel-queued-db-cleanup
 ```
 
-The package uses a lock to prevent multiple deletions for the same query to be executed at the same time. We recommend using redis to store the lock.
+The package uses a lock to prevent multiple deletions for the same query to be executed at the same time. We recommend using Redis to store the lock.
 
 Behind the scenes this package leverages [job batches](https://laravel.com/docs/master/queues#job-batching). Make sure your created the batches table mentioned in the Laravel documentation.
 
 Optionally, you can publish the config file with:
+
 ```bash
 php artisan vendor:publish --provider="Spatie\LaravelQueuedDbCleanup\LaravelQueuedDbCleanupServiceProvider" --tag="config"
 ```
@@ -94,7 +95,7 @@ The job will not redispatch itself when there were fewer records deleted than th
 
 ### Starting the cleanup in a scheduled tasks
 
-It is safe to start the cleanup process from within a scheduled task. Internally the package will use a lock to make sure that no two cleanups using the same query are running at the same time.
+It is safe to start the cleanup process from within a scheduled task. Internally the package will use a lock to make sure no two cleanups using the same query are running at the same time.
 
 If a scheduled task starts a cleanup process while another one is still running, the new cleanup process will be cancelled.
 
@@ -109,7 +110,7 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
     ->getBatch()
     ->onConnection('redis')
     ->onQueue('cleanups')
-    ->dispatch()
+    ->dispatch();
 ```
 
 ### Manually stopping the cleanup process
@@ -143,7 +144,7 @@ $batch = CleanDatabaseJobFactory::forQuery(YourModel::query())
 // you could store this batch id somewhere
 $batchId = $batch->id;
 
-$batch->dispatch()
+$batch->dispatch();
 ```
 
 Somewhere else in your codebase you could retrieve the stored batch id and use it to cancel the batch, stopping the cleanup process.
@@ -167,7 +168,6 @@ Fired when a pass has been completed in the cleanup process.
 ### Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePCompleted
 
 Fired when the entire cleanup process has been completed. 
-
 
 ## Testing
 
