@@ -10,7 +10,7 @@ Deleting many database records in one go using Laravel has a few pitfalls you ne
 - the delete query will acquire many row locks and possible lock your entire table, other queries will need to wait
 - even when managing query execution and cleanup, there's a fixed maximum execution time in a serverless environment
 
-The pitfalls described in more detail in [this post](https://flareapp.io/blog/7-how-to-safely-delete-records-in-massive-tables-on-aws-using-laravel) on the [Flare blog](https://flareapp.io/).
+The pitfalls are described in more detail in [this post](https://flareapp.io/blog/7-how-to-safely-delete-records-in-massive-tables-on-aws-using-laravel) on the [Flare blog](https://flareapp.io/).
 
 This package offers a solution to safely delete many records in large tables. Here's an example:
 
