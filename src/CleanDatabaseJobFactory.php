@@ -5,7 +5,6 @@ namespace Spatie\LaravelQueuedDbCleanup;
 use Closure;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\PendingBatch;
-use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Bus;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
