@@ -4,26 +4,28 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/laravel-queued-db-cleanup/run-tests?label=tests)](https://github.com/spatie/laravel-queued-db-cleanup/actions?query=workflow%3Arun-tests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-queued-db-cleanup.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-queued-db-cleanup)
 
-When you want to delete many records in one go using Laravel there are a few pitfalls you need to be aware of:
+Deleting many database records in one go using Laravel has a few pitfalls you need to be aware of:
 
-- deleting records is possibly a slow operation that can take a long time
-- there's a possibility that the database will lock your entire table, other queries will need to wait
-- in a serverless environment, there's a fixed maximum execution time
+- deleting records is possibly a slow operation that can take a long time,
+- the delete query will acquire many row locks and possible lock your entire table, other queries will need to wait
+- even when managing query execution and cleanup, there's a fixed maximum execution time in a serverless environment
 
-The pitfalls described in more detail in [this post](https://flareapp.io/blog/7-how-to-safely-delete-records-in-massive-tables-on-aws-using-laravel) at the [Flare](https://flareapp.io/).
+The pitfalls are described in more detail in [this post](https://flareapp.io/blog/7-how-to-safely-delete-records-in-massive-tables-on-aws-using-laravel) on the [Flare blog](https://flareapp.io/).
 
 This package offers a solution to safely delete many records in large tables. Here's an example:
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
-    ->query(YourModel::query()->where('created_at', <,  now()->subMonth())
+    ->query(YourModel::query()->where('created_at', '<',  now()->subMonth()))
     ->deleteChunkSize(1000)
     ->dispatch();
 ```
 
 The code above will dispatch a cleanup job that will delete the first 1000 records that are selected by the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
 
-By keeping the chunk size small the query executes faster and potential table locks will not be held for long periods of time. The cleanup job will also finish fast, so you won't hit an execution time limit.
+We'll also make sure that this cleanup job never overlaps. This way the number of database connections is kept low. It also allows you the schedule this cleanup job repeatedly throug CRON without having to check for an existing cleanup process.
+
+By keeping the chunk size small, the query executes faster and potential table locks will not be held for long periods of time. The cleanup job will also finish fast, so you won't hit an execution time limit.
 
 ## Support us
 
@@ -43,11 +45,12 @@ You can install the package via composer:
 composer require spatie/laravel-queued-db-cleanup
 ```
 
-The package uses a lock to prevent multiple deletions for the same query to be executed at the same time. We recommend using redis to store the lock.
+The package uses a lock to prevent multiple deletions for the same query to be executed at the same time. We recommend using Redis to store the lock.
 
 Behind the scenes this package leverages [job batches](https://laravel.com/docs/master/queues#job-batching). Make sure you have created the batches table mentioned in the Laravel documentation.
 
 Optionally, you can publish the config file with:
+
 ```bash
 php artisan vendor:publish --provider="Spatie\LaravelQueuedDbCleanup\LaravelQueuedDbCleanupServiceProvider" --tag="config"
 ```
@@ -83,7 +86,7 @@ This code will dispatch a cleanup job that will delete the first 1000 records th
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
-    ->query(YourModel::query()->where('created_at', <,  now()->subMonth())
+    ->query(YourModel::query()->where('created_at', '<',  now()->subMonth()))
     ->deleteChunkSize(1000)
     ->dispatch();
 ```
@@ -92,7 +95,7 @@ The job will not redispatch itself when there were fewer records deleted than th
 
 ### Starting the cleanup in a scheduled tasks
 
-It is safe to start the cleanup process from within a scheduled task. Internally the package will use a lock to make sure that no two cleanups using the same query are running at the same time.
+It is safe to start the cleanup process from within a scheduled task. Internally the package will use a lock to make sure no two cleanups using the same query are running at the same time.
 
 If a scheduled task starts a cleanup process while another one is still running, the new cleanup process will be cancelled.
 
@@ -102,12 +105,12 @@ Internally, the package uses job batches. Using `getBatch` you can get the batch
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
-    ->query(YourModel::query()->where('created_at', <,  now()->subMonth())
+    ->query(YourModel::query()->where('created_at', '<',  now()->subMonth()))
     ->deleteChunkSize(1000)
     ->getBatch()
     ->onConnection('redis')
     ->onQueue('cleanups')
-    ->dispatch()
+    ->dispatch();
 ```
 
 ### Manually stopping the cleanup process
@@ -141,7 +144,7 @@ $batch = CleanDatabaseJobFactory::forQuery(YourModel::query())
 // you could store this batch id somewhere
 $batchId = $batch->id;
 
-$batch->dispatch()
+$batch->dispatch();
 ```
 
 Somewhere else in your codebase you could retrieve the stored batch id and use it to cancel the batch, stopping the cleanup process.
@@ -165,7 +168,6 @@ Fired when a pass has been completed in the cleanup process.
 ### Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePCompleted
 
 Fired when the entire cleanup process has been completed. 
-
 
 ## Testing
 

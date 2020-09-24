@@ -38,8 +38,6 @@ class CleanDatabaseJob implements ShouldQueue
 
         $this->config->lock()->forceRelease();
 
-
-
         $this->config->rowsDeletedInThisPass($numberOfRowsDeleted);
 
         $this->config->shouldContinueCleaning()
@@ -56,7 +54,6 @@ class CleanDatabaseJob implements ShouldQueue
     {
         return $this->config->displayName ?? static::class;
     }
-
 
     protected function performCleaning(): int
     {

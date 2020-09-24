@@ -30,7 +30,7 @@ class CleanConfig
 
     public array $tags = [];
 
-    public ?string $displayName;
+    public ?string $displayName = null;
 
     public int $releaseLockAfterSeconds;
 
@@ -75,8 +75,6 @@ class CleanConfig
 
         return $this;
     }
-
-
 
     public function executeDeleteQuery(): int
     {

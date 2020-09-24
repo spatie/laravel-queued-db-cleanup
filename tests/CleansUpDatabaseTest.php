@@ -41,12 +41,12 @@ class CleansUpDatabaseTest extends TestCase
             ->deleteChunkSize($chunkSize)
             ->dispatch();
 
-        $this->assertEquals($remaining, TestModel::count());
+        $this->assertSame($remaining, TestModel::count());
 
         Event::assertDispatched(function (CleanDatabaseCompleted $event) use ($totalRecords, $passesPerformed) {
-            $this->assertEquals($passesPerformed, $event->cleanConfig->pass);
+            $this->assertSame($passesPerformed, $event->cleanConfig->pass);
 
-            $this->assertEquals($totalRecords, $event->cleanConfig->totalRowsDeleted);
+            $this->assertSame($totalRecords, $event->cleanConfig->totalRowsDeleted);
 
             return true;
         });
@@ -75,13 +75,13 @@ class CleansUpDatabaseTest extends TestCase
             })
             ->dispatch();
 
-        $this->assertEquals(70, TestModel::count());
+        $this->assertSame(70, TestModel::count());
 
         Event::assertDispatched(function (CleanDatabaseCompleted $event) {
-            $this->assertEquals(3, $event->cleanConfig->pass);
+            $this->assertSame(3, $event->cleanConfig->pass);
 
-            $this->assertEquals(10, $event->cleanConfig->rowsDeletedInThisPass);
-            $this->assertEquals(30, $event->cleanConfig->totalRowsDeleted);
+            $this->assertSame(10, $event->cleanConfig->rowsDeletedInThisPass);
+            $this->assertSame(30, $event->cleanConfig->totalRowsDeleted);
 
             return true;
         });
@@ -96,7 +96,7 @@ class CleansUpDatabaseTest extends TestCase
             ->dispatch();
 
         Event::assertDispatched(function (CleanDatabasePassStarting $event) {
-            $this->assertEquals(1, $event->cleanConfig->pass);
+            $this->assertSame(1, $event->cleanConfig->pass);
 
             return true;
         });
@@ -118,11 +118,11 @@ class CleansUpDatabaseTest extends TestCase
 
         $job->config->lock()->get();
         $jobFactory->dispatch();
-        $this->assertEquals(10, TestModel::count());
+        $this->assertSame(10, TestModel::count());
 
         $job->config->lock()->forceRelease();
         $jobFactory->dispatch();
-        $this->assertEquals(0, TestModel::count());
+        $this->assertSame(0, TestModel::count());
     }
 
     /** @test */
@@ -146,7 +146,7 @@ class CleansUpDatabaseTest extends TestCase
             ->deleteChunkSize(10)
             ->dispatch();
 
-        $this->assertEquals(9, TestModel::count());
+        $this->assertSame(9, TestModel::count());
     }
 
     /** @test */
