@@ -165,7 +165,7 @@ Fired when a new pass starts in the cleanup process.
 
 Fired when a pass has been completed in the cleanup process. 
 
-### Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePCompleted
+### Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted
 
 Fired when the entire cleanup process has been completed. 
 
