@@ -16,7 +16,7 @@ This package offers a solution to safely delete many records in large tables. He
 
 ```php
 Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
-    ->query(YourModel::query()->where('created_at', <,  now()->subMonth())
+    ->query(YourModel::query()->where('created_at', '<',  now()->subMonth()))
     ->deleteChunkSize(1000)
     ->dispatch();
 ```
