@@ -23,7 +23,7 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
 
 The code above will dispatch a cleanup job that will delete the first 1000 records that are selected by the query. When it detects that 1000 records have been deleted, it will conclude that possibly not all records are deleted and it will redispatch itself.
 
-We'll also make sure that this cleanup job never overlaps. This way the number of database connections is kept low. It also allows you the schedule this cleanup job repeatedly throug CRON without having to check for an existing cleanup process.
+We'll also make sure that this cleanup job never overlaps. This way the number of database connections is kept low. It also allows you the schedule this cleanup job repeatedly through CRON without having to check for an existing cleanup process.
 
 By keeping the chunk size small, the query executes faster and potential table locks will not be held for long periods of time. The cleanup job will also finish fast, so you won't hit an execution time limit.
 
