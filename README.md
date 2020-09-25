@@ -1,7 +1,7 @@
 # Safely delete large numbers of records
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-queued-db-cleanup.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-queued-db-cleanup)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/laravel-queued-db-cleanup/run-tests?label=tests)](https://github.com/spatie/laravel-queued-db-cleanup/actions?query=workflow%3Arun-tests+branch%3Amaster)
+![Tests](https://github.com/spatie/laravel-queued-db-cleanup/workflows/Tests/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-queued-db-cleanup.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-queued-db-cleanup)
 
 Deleting many database records in one go using Laravel has a few pitfalls you need to be aware of:
