@@ -34,13 +34,23 @@ class TestCase extends Orchestra
             'database' => ':memory:',
             'prefix' => '',
         ]);
+        $app['config']->set('database.connections.sqliteSecondary', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
 
-        Schema::create('test_models', function (Blueprint $table) {
+        Schema::connection('sqliteSecondary')->create('test_models', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
         });
 
-        Schema::create('job_batches', function (Blueprint $table) {
+        Schema::connection('sqlite')->create('test_models', function (Blueprint $table) {
+            $table->increments('id');
+            $table->timestamps();
+        });
+
+        Schema::connection('sqlite')->create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
             $table->integer('total_jobs');
