@@ -113,7 +113,7 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
     ->dispatch();
 ```
 
-### Customiszing the database connection
+### Customizing the database connection
 
 Using `onDatabaseConnection` will allow you to delete records on another connection.
 
