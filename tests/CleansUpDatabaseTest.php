@@ -2,7 +2,6 @@
 
 namespace Spatie\LaravelQueuedDbCleanup\Tests;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
@@ -12,7 +11,6 @@ use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\InvalidDatabaseCleanupJobClass as InvalidDatabaseCleanupJobTestClass;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
-use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModelSecondary;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\ValidDatabaseCleanupJobClass;
 
 class CleansUpDatabaseTest extends TestCase
@@ -216,6 +214,5 @@ class CleansUpDatabaseTest extends TestCase
 
         $this->assertDatabaseCount('test_models', 0, 'sqliteSecondary');
         $this->assertDatabaseCount('test_models', 10);
-
     }
 }
