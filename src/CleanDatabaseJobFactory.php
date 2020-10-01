@@ -81,6 +81,13 @@ class CleanDatabaseJobFactory
         return $this;
     }
 
+    public function onDatabaseConnection(string $connection): self
+    {
+        $this->cleanConfig->connection = $connection;
+
+        return $this;
+    }
+
     public function getJob(): CleanDatabaseJob
     {
         $this->ensureValid();

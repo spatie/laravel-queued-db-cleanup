@@ -113,6 +113,17 @@ Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
     ->dispatch();
 ```
 
+### Customizing the database connection
+
+Using `onDatabaseConnection` will allow you to delete records on another connection.
+
+```php
+Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory::new()
+    ->query(YourModel::query())
+    ->onDatabaseConnection('other_connection')
+    ->deleteChunkSize(1000)
+    ->dispatch();
+```
 ### Manually stopping the cleanup process
 
 By default, the cleanup jobs will not redispatch themselves anymore when they detect that they've deleted fewer records than the chunk size. You can customize this behaviour by calling `stopWhen`. It should receive a closure. If the closure returns `true` the cleanup will stop.

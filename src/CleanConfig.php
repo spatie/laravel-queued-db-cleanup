@@ -34,6 +34,8 @@ class CleanConfig
 
     public int $releaseLockAfterSeconds;
 
+    public ?string $connection = null;
+
     public function __construct()
     {
         $this->lockCacheStore = config('queued-db-cleanup.lock.cache_store');
@@ -78,7 +80,7 @@ class CleanConfig
 
     public function executeDeleteQuery(): int
     {
-        return DB::delete($this->sql, $this->sqlBindings);
+        return DB::connection($this->connection)->delete($this->sql, $this->sqlBindings);
     }
 
     public function stopWhen(Closure $closure)
