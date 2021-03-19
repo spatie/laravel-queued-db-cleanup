@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.1.2 - 2021-03-09
+
+- allow v2 and v3 of doctrine for PHP 8 compat (#10)
 
 ## 1.1.1 - 2021-01-09
 
