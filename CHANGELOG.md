@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.2.0 - 2022-01-13
+
+- support Laravel 9
+
 ## 1.1.3 - 2021-10-04
 
 - switch to laravel/serializable-closure (#12)
