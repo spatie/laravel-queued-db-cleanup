@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.2.1 - 2023-01-24
+
+### What's Changed
+
+- Laravel 10.x Compatibility by @laravel-shift in https://github.com/spatie/laravel-queued-db-cleanup/pull/14
+
+### New Contributors
+
+- @laravel-shift made their first contribution in https://github.com/spatie/laravel-queued-db-cleanup/pull/14
+
+**Full Changelog**: https://github.com/spatie/laravel-queued-db-cleanup/compare/1.2.0...1.2.1
+
 ## 1.2.0 - 2022-01-13
 
 - support Laravel 9
