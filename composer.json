@@ -21,11 +21,11 @@
     "require": {
         "php": "^7.4|^8.0",
         "doctrine/dbal": "~2.12|^3.0",
-        "illuminate/contracts": "^8.0|^9.0",
+        "illuminate/contracts": "^8.0|^9.0|^10.0",
         "laravel/serializable-closure": "^1.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.23|^7.0",
+        "orchestra/testbench": "^6.23|^7.0|^8.0",
         "phpunit/phpunit": "^9.4"
     },
     "autoload": {
