@@ -1,7 +1,5 @@
 <?php
 
-namespace Spatie\LaravelQueuedDbCleanup\Tests;
-
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
@@ -13,206 +11,160 @@ use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\InvalidDatabaseCleanupJobCla
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\ValidDatabaseCleanupJobClass;
 
-class CleansUpDatabaseTest extends TestCase
-{
-    public function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+    Event::fake();
+});
 
-        Event::fake();
-    }
+it('can delete records in the right amount of passes', function (
+    int $totalRecords,
+    int $chunkSize,
+    int $remaining,
+    int $passesPerformed
+) {
+    Event::fake();
 
-    /**
-     * @test
-     *
-     * @dataProvider getTestCases
-     */
-    public function it_can_delete_records_in_the_right_amount_of_passes(
-        int $totalRecords,
-        int $chunkSize,
-        int $remaining,
-        int $passesPerformed
-    ) {
-        Event::fake();
+    TestModel::factory()->count($totalRecords)->create();
 
-        TestModel::factory()->count($totalRecords)->create();
+    CleanDatabaseJobFactory::forQuery(TestModel::query())
+        ->deleteChunkSize($chunkSize)
+        ->dispatch();
 
-        CleanDatabaseJobFactory::forQuery(TestModel::query())
-            ->deleteChunkSize($chunkSize)
-            ->dispatch();
+    expect(TestModel::count())->toBe($remaining);
 
-        $this->assertSame($remaining, TestModel::count());
+    Event::assertDispatched(function (CleanDatabaseCompleted $event) use ($totalRecords, $passesPerformed) {
+        expect($event->cleanConfig->pass)->toBe($passesPerformed)
+            ->and($event->cleanConfig->totalRowsDeleted)->toBe($totalRecords);
 
-        Event::assertDispatched(function (CleanDatabaseCompleted $event) use ($totalRecords, $passesPerformed) {
-            $this->assertSame($passesPerformed, $event->cleanConfig->pass);
+        return true;
+    });
+})->with([
+    [100, 10, 0, 11],
+    [100, 10, 0, 11],
+    [99, 10, 0, 10],
+    [100, 5, 0, 21],
+]);
 
-            $this->assertSame($totalRecords, $event->cleanConfig->totalRowsDeleted);
+it('can continue deleting until a specified condition', function () {
+    TestModel::factory()->count(100)->create();
 
-            return true;
-        });
-    }
+    CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->deleteChunkSize(10)
+        ->stopWhen(function (CleanConfig $config) {
+            return $config->pass === 3;
+        })
+        ->dispatch();
 
-    public function getTestCases(): array
-    {
-        return [
-            [100, 10, 0, 11],
-            [100, 10, 0, 11],
-            [99, 10, 0, 10],
-            [100, 5, 0, 21],
-        ];
-    }
+    expect(TestModel::count())->toBe(70);
 
-    /** @test */
-    public function it_can_continue_deleting_until_a_specified_condition()
-    {
-        TestModel::factory()->count(100)->create();
+    Event::assertDispatched(function (CleanDatabaseCompleted $event) {
+        expect($event->cleanConfig->pass)->toBe(3)
+            ->and($event->cleanConfig->rowsDeletedInThisPass)->toBe(10)
+            ->and($event->cleanConfig->totalRowsDeleted)->toBe(30);
 
-        CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10)
-            ->stopWhen(function (CleanConfig $config) {
-                return $config->pass === 3;
-            })
-            ->dispatch();
+        return true;
+    });
+});
 
-        $this->assertSame(70, TestModel::count());
+it('dispatches a start event', function () {
+    CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->deleteChunkSize(10)
+        ->dispatch();
 
-        Event::assertDispatched(function (CleanDatabaseCompleted $event) {
-            $this->assertSame(3, $event->cleanConfig->pass);
+    Event::assertDispatched(function (CleanDatabasePassStarting $event) {
+        expect($event->cleanConfig->pass)->toBe(1);
 
-            $this->assertSame(10, $event->cleanConfig->rowsDeletedInThisPass);
-            $this->assertSame(30, $event->cleanConfig->totalRowsDeleted);
+        return true;
+    });
+});
 
-            return true;
-        });
-    }
+it('will not clean if it cannot get the lock', function () {
+    TestModel::factory()->count(10)->create();
 
-    /** @test */
-    public function it_dispatches_a_start_event()
-    {
-        CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10)
-            ->dispatch();
+    $jobFactory = CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->deleteChunkSize(10);
 
-        Event::assertDispatched(function (CleanDatabasePassStarting $event) {
-            $this->assertSame(1, $event->cleanConfig->pass);
+    $job = CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->deleteChunkSize(10)
+        ->getJob();
 
-            return true;
-        });
-    }
+    $job->config->lock()->get();
+    $jobFactory->dispatch();
+    expect(TestModel::count())->toBe(10);
 
-    /** @test */
-    public function it_will_not_clean_if_it_cannot_get_the_lock()
-    {
-        TestModel::factory()->count(10)->create();
+    $job->config->lock()->forceRelease();
+    $jobFactory->dispatch();
+    expect(TestModel::count())->toBe(0);
+});
 
-        $jobFactory = CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10);
+test('the job can be serialized', function () {
+    $job = CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->deleteChunkSize(10)
+        ->getJob();
 
-        $job = CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10)
-            ->getJob();
+    expect(serialize($job))->toBeString();
+});
 
-        $job->config->lock()->get();
-        $jobFactory->dispatch();
-        $this->assertSame(10, TestModel::count());
+it('respects the bindings', function () {
+    TestModel::factory()->count(10)->create();
 
-        $job->config->lock()->forceRelease();
-        $jobFactory->dispatch();
-        $this->assertSame(0, TestModel::count());
-    }
+    CleanDatabaseJobFactory::new()
+        ->query(TestModel::query()->where('id', 1))
+        ->deleteChunkSize(10)
+        ->dispatch();
 
-    /** @test */
-    public function the_job_can_be_serialized()
-    {
-        $job = CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10)
-            ->getJob();
+    expect(TestModel::count())->toBe(9);
+});
 
-        $this->assertIsString(serialize($job));
-    }
+it('can use a custom database cleanup job class', function () {
+    $job = CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->deleteChunkSize(10)
+        ->jobClass(ValidDatabaseCleanupJobClass::class)
+        ->getJob();
 
-    /** @test */
-    public function it_respects_the_bindings()
-    {
-        TestModel::factory()->count(10)->create();
+    expect($job)->toBeInstanceOf(ValidDatabaseCleanupJobClass::class);
+});
 
-        CleanDatabaseJobFactory::new()
-            ->query(TestModel::query()->where('id', 1))
-            ->deleteChunkSize(10)
-            ->dispatch();
+it('throws an exception if an invalid job class is used')
+    ->tap(fn () => CleanDatabaseJobFactory::new()->jobClass(InvalidDatabaseCleanupJobTestClass::class))
+    ->throws(InvalidDatabaseCleanupJobClass::class);
 
-        $this->assertSame(9, TestModel::count());
-    }
+it('throws an exception if no query was set')
+    ->tap(fn () => CleanDatabaseJobFactory::new()->dispatch())
+    ->throws(CouldNotCreateJob::class);
 
-    /** @test */
-    public function it_can_use_a_custom_database_cleanup_job_class()
-    {
-        $job = CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->deleteChunkSize(10)
-            ->jobClass(ValidDatabaseCleanupJobClass::class)
-            ->getJob();
+it('throws an exception if no chunk size was set')
+    ->tap(fn () => CleanDatabaseJobFactory::new()->query(TestModel::query())->dispatch())
+    ->throws(CouldNotCreateJob::class);
 
-        $this->assertInstanceOf(ValidDatabaseCleanupJobClass::class, $job);
-    }
+it('can use a custom connection', function () {
+    $config = CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->onDatabaseConnection('test')
+        ->deleteChunkSize(10)
+        ->cleanConfig;
 
-    /** @test */
-    public function it_throws_an_exception_if_an_invalid_job_class_is_used()
-    {
-        $this->expectException(InvalidDatabaseCleanupJobClass::class);
+    expect($config->connection)->toEqual('test');
+});
 
-        CleanDatabaseJobFactory::new()->jobClass(InvalidDatabaseCleanupJobTestClass::class);
-    }
+it('can delete records on custom connection', function () {
+    TestModel::factory()->count(10)->create();
+    TestModel::factory()->connection('sqliteSecondary')->count(10)->create();
 
-    /** @test */
-    public function it_throws_an_exception_if_no_query_was_set()
-    {
-        $this->expectException(CouldNotCreateJob::class);
+    $this->assertDatabaseCount('test_models', 10, 'sqliteSecondary');
+    $this->assertDatabaseCount('test_models', 10);
 
-        CleanDatabaseJobFactory::new()->dispatch();
-    }
+    CleanDatabaseJobFactory::new()
+        ->query(TestModel::query())
+        ->onDatabaseConnection('sqliteSecondary')
+        ->deleteChunkSize(10)
+        ->dispatch();
 
-    /** @test */
-    public function it_throws_an_exception_if_no_chunk_size_was_set()
-    {
-        $this->expectException(CouldNotCreateJob::class);
-
-        CleanDatabaseJobFactory::new()->query(TestModel::query())->dispatch();
-    }
-
-    /** @test */
-    public function it_can_use_a_custom_connection()
-    {
-        $config = CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->onDatabaseConnection('test')
-            ->deleteChunkSize(10)
-            ->cleanConfig;
-
-        $this->assertEquals('test',  $config->connection);
-    }
-
-    /** @test */
-    public function it_can_delete_records_on_custom_connection()
-    {
-        TestModel::factory()->count(10)->create();
-        TestModel::factory()->connection('sqliteSecondary')->count(10)->create();
-
-        $this->assertDatabaseCount('test_models', 10, 'sqliteSecondary');
-        $this->assertDatabaseCount('test_models', 10);
-
-        CleanDatabaseJobFactory::new()
-            ->query(TestModel::query())
-            ->onDatabaseConnection('sqliteSecondary')
-            ->deleteChunkSize(10)
-            ->dispatch();
-
-        $this->assertDatabaseCount('test_models', 0, 'sqliteSecondary');
-        $this->assertDatabaseCount('test_models', 10);
-    }
-}
+    $this->assertDatabaseCount('test_models', 0, 'sqliteSecondary');
+    $this->assertDatabaseCount('test_models', 10);
+});
