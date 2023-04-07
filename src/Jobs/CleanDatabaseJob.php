@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabaseCompleted;
 use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassCompleted;
@@ -63,7 +64,9 @@ class CleanDatabaseJob implements ShouldQueue
     {
         event(new CleanDatabasePassStarting($this->config));
 
-        return $this->config->executeDeleteQuery();
+        return DB::transaction(function() {
+            return $this->config->executeDeleteQuery();
+        }, config('queued-db-cleanup.delete_query_attempts'));
     }
 
     protected function continueCleaning(): void
