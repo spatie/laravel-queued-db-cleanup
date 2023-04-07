@@ -75,6 +75,13 @@ return [
      * or a class that extends it.
      */
     'clean_database_job_class' => Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob::class,
+
+    /*
+     * In order to handle deadlocks on a high traffic table, the package can
+     * automatically retry the transaction that performs the delete query
+     * a specified number of times
+     */
+    'delete_query_attempts' => 3,
 ];
 ```
 
