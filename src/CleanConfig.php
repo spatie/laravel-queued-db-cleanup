@@ -44,8 +44,7 @@ class CleanConfig
     }
 
     /**
-     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
-     * @param int $chunkSize
+     * @param  \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder  $query
      */
     public function usingQuery($query, int $chunkSize)
     {
@@ -126,6 +125,6 @@ class CleanConfig
     /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
     protected function convertQueryToLockName($query): string
     {
-        return md5($query->toSql() . print_r($query->getBindings(), true));
+        return md5($query->toSql().print_r($query->getBindings(), true));
     }
 }

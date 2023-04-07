@@ -10,13 +10,13 @@ class LaravelQueuedDbCleanupServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/queued-db-cleanup.php' => config_path('queued-db-cleanup.php'),
+                __DIR__.'/../config/queued-db-cleanup.php' => config_path('queued-db-cleanup.php'),
             ], 'config');
         }
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/queued-db-cleanup.php', 'queued-db-cleanup');
+        $this->mergeConfigFrom(__DIR__.'/../config/queued-db-cleanup.php', 'queued-db-cleanup');
     }
 }
