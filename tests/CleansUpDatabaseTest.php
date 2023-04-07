@@ -194,7 +194,7 @@ class CleansUpDatabaseTest extends TestCase
             ->deleteChunkSize(10)
             ->cleanConfig;
 
-        $this->assertEquals('test',  $config->connection);
+        $this->assertEquals('test', $config->connection);
     }
 
     /** @test */

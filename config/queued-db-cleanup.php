@@ -9,7 +9,7 @@ return [
     'lock' => [
         'cache_store' => 'redis',
 
-        'release_lock_after_seconds' => 60 * 20
+        'release_lock_after_seconds' => 60 * 20,
     ],
 
     /*
