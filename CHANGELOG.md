@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.3.0 - 2023-04-07
+
+- improve handling deadlocks
+
 ## 1.2.1 - 2023-01-24
 
 ### What's Changed
