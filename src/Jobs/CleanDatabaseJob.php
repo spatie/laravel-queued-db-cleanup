@@ -64,7 +64,7 @@ class CleanDatabaseJob implements ShouldQueue
     {
         event(new CleanDatabasePassStarting($this->config));
 
-        return DB::transaction(function() {
+        return DB::transaction(function () {
             return $this->config->executeDeleteQuery();
         }, config('queued-db-cleanup.delete_query_attempts'));
     }
