@@ -57,8 +57,8 @@ class CleanConfig
         $this->lockName = $this->convertQueryToLockName($query);
 
         if ($this->stopWhen === null) {
-            $this->stopWhen(function (CleanConfig $cleanConfig) use ($chunkSize) {
-                return $cleanConfig->rowsDeletedInThisPass < $chunkSize;
+            $this->stopWhen(function (CleanConfig $cleanConfig) {
+                return $cleanConfig->rowsDeletedInThisPass < $cleanConfig->deleteChunkSize;
             });
         }
     }
