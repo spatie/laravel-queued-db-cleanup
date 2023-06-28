@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.3.2 - 2023-06-28
+
+### What's Changed
+
+- Avoid serializing `CleanConfig` object inside `stopWhen` parameter by @Plytas in https://github.com/spatie/laravel-queued-db-cleanup/pull/16
+
+**Full Changelog**: https://github.com/spatie/laravel-queued-db-cleanup/compare/1.3.1...1.3.2
+
 ## 1.3.1 - 2023-06-28
 
 ### What's Changed
