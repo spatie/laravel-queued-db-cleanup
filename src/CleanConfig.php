@@ -62,7 +62,7 @@ class CleanConfig
 
         if ($this->stopWhen === null) {
             $this->stopWhen(function (CleanConfig $cleanConfig) {
-                return $cleanConfig->rowsDeletedInThisPass < $this->deleteChunkSize;
+                return $cleanConfig->rowsDeletedInThisPass < $cleanConfig->deleteChunkSize;
             });
         }
     }
