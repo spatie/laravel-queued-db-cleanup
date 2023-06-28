@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.3.1 - 2023-06-28
+
+### What's Changed
+
+- Support for database query builder by @Plytas in https://github.com/spatie/laravel-queued-db-cleanup/pull/17
+
+### New Contributors
+
+- @Plytas made their first contribution in https://github.com/spatie/laravel-queued-db-cleanup/pull/17
+
+**Full Changelog**: https://github.com/spatie/laravel-queued-db-cleanup/compare/1.3.0...1.3.1
+
 ## 1.3.0 - 2023-04-07
 
 - improve handling deadlocks
