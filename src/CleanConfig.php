@@ -48,7 +48,11 @@ class CleanConfig
      */
     public function usingQuery($query, int $chunkSize)
     {
-        $this->sql = $query->limit($chunkSize)->getGrammar()->compileDelete($query->toBase());
+        $baseQuery = $query instanceof \Illuminate\Database\Eloquent\Builder
+            ? $query->toBase()
+            : $query;
+
+        $this->sql = $query->limit($chunkSize)->getGrammar()->compileDelete($baseQuery);
 
         $this->sqlBindings = $query->getBindings();
 

@@ -107,7 +107,7 @@ class CleansUpDatabaseTest extends TestCase
     public function it_accepts_database_query_builder()
     {
         CleanDatabaseJobFactory::new()
-            ->query(DB::query())
+            ->query(DB::table('test_models'))
             ->deleteChunkSize(10)
             ->dispatch();
 
