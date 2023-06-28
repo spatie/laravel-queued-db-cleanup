@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelQueuedDbCleanup\Tests;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Spatie\LaravelQueuedDbCleanup\CleanConfig;
 use Spatie\LaravelQueuedDbCleanup\CleanDatabaseJobFactory;
@@ -92,6 +93,21 @@ class CleansUpDatabaseTest extends TestCase
     {
         CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
+            ->deleteChunkSize(10)
+            ->dispatch();
+
+        Event::assertDispatched(function (CleanDatabasePassStarting $event) {
+            $this->assertSame(1, $event->cleanConfig->pass);
+
+            return true;
+        });
+    }
+
+    /** @test */
+    public function it_accepts_database_query_builder()
+    {
+        CleanDatabaseJobFactory::new()
+            ->query(DB::table('test_models'))
             ->deleteChunkSize(10)
             ->dispatch();
 
