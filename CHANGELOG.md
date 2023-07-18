@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.3.3 - 2023-07-18
+
+### What's Changed
+
+- Fix limit not being applied to query by @dmason30 in https://github.com/spatie/laravel-queued-db-cleanup/pull/18
+
+**Full Changelog**: https://github.com/spatie/laravel-queued-db-cleanup/compare/1.3.2...1.3.3
+
 ## 1.3.2 - 2023-06-28
 
 ### What's Changed
