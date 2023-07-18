@@ -52,13 +52,13 @@ class CleanConfig
             ? $query->toBase()
             : $query;
 
-        $this->sql = $query->limit($chunkSize)->getGrammar()->compileDelete($baseQuery);
+        $this->sql = $baseQuery->limit($chunkSize)->getGrammar()->compileDelete($baseQuery);
 
-        $this->sqlBindings = $query->getBindings();
+        $this->sqlBindings = $baseQuery->getBindings();
 
         $this->deleteChunkSize = $chunkSize;
 
-        $this->lockName = $this->convertQueryToLockName($query);
+        $this->lockName = $this->convertQueryToLockName($baseQuery);
 
         if ($this->stopWhen === null) {
             $this->stopWhen(function (CleanConfig $cleanConfig) {
