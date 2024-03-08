@@ -53,7 +53,7 @@ class CleansUpDatabaseTest extends TestCase
         });
     }
 
-    public function getTestCases(): array
+    public static function getTestCases(): array
     {
         return [
             [100, 10, 0, 11],
