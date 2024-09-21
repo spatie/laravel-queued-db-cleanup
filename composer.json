@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "doctrine/dbal": "^3.0",
+        "doctrine/dbal": "^3.0|^4.0",
         "illuminate/contracts": "^10.0|^11.0",
         "laravel/serializable-closure": "^1.0"
     },
