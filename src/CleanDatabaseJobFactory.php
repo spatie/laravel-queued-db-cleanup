@@ -23,7 +23,7 @@ class CleanDatabaseJobFactory
 
     public static function new()
     {
-        return new static();
+        return new static;
     }
 
     public static function forQuery($query)
@@ -36,7 +36,7 @@ class CleanDatabaseJobFactory
     {
         $this->jobClass = config('queued-db-cleanup.clean_database_job_class');
 
-        $this->cleanConfig = new CleanConfig();
+        $this->cleanConfig = new CleanConfig;
 
         $this->query = $query;
     }
