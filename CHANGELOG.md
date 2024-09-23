@@ -2,6 +2,18 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.5.0 - 2024-09-23
+
+### What's Changed
+
+* Allow doctrine/dbal 4.0 by @mbardelmeijer in https://github.com/spatie/laravel-queued-db-cleanup/pull/21
+
+### New Contributors
+
+* @mbardelmeijer made their first contribution in https://github.com/spatie/laravel-queued-db-cleanup/pull/21
+
+**Full Changelog**: https://github.com/spatie/laravel-queued-db-cleanup/compare/1.4.0...1.5.0
+
 ## 1.4.0 - 2024-03-08
 
 ### What's Changed
