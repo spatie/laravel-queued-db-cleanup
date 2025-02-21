@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-queued-db-cleanup` will be documented in this file
 
+## 1.5.1 - 2025-02-21
+
+### What's Changed
+
+* Laravel 12.x Compatibility by @laravel-shift in https://github.com/spatie/laravel-queued-db-cleanup/pull/22
+
+**Full Changelog**: https://github.com/spatie/laravel-queued-db-cleanup/compare/1.5.0...1.5.1
+
 ## 1.5.0 - 2024-09-23
 
 ### What's Changed
