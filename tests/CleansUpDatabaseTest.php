@@ -16,7 +16,7 @@ use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\ValidDatabaseCleanupJobClass
 
 class CleansUpDatabaseTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
