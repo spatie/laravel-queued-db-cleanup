@@ -11,6 +11,7 @@ use Spatie\LaravelQueuedDbCleanup\Events\CleanDatabasePassStarting;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\InvalidDatabaseCleanupJobClass as InvalidDatabaseCleanupJobTestClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\TestModel;
 use Spatie\LaravelQueuedDbCleanup\Tests\TestClasses\ValidDatabaseCleanupJobClass;
 
@@ -23,9 +24,7 @@ class CleansUpDatabaseTest extends TestCase
         Event::fake();
     }
 
-    /**
-     * @dataProvider getTestCases
-     */
+    #[DataProvider('getTestCases')]
     public function test_it_can_delete_records_in_the_right_amount_of_passes(
         int $totalRecords,
         int $chunkSize,
