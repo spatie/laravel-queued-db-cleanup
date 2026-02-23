@@ -24,11 +24,9 @@ class CleansUpDatabaseTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @dataProvider getTestCases
      */
-    public function it_can_delete_records_in_the_right_amount_of_passes(
+    public function test_it_can_delete_records_in_the_right_amount_of_passes(
         int $totalRecords,
         int $chunkSize,
         int $remaining,
@@ -63,8 +61,7 @@ class CleansUpDatabaseTest extends TestCase
         ];
     }
 
-    /** @test */
-    public function it_can_continue_deleting_until_a_specified_condition()
+    public function test_it_can_continue_deleting_until_a_specified_condition()
     {
         TestModel::factory()->count(100)->create();
 
@@ -88,8 +85,7 @@ class CleansUpDatabaseTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_dispatches_a_start_event()
+    public function test_it_dispatches_a_start_event()
     {
         CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
@@ -103,8 +99,7 @@ class CleansUpDatabaseTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_accepts_database_query_builder()
+    public function test_it_accepts_database_query_builder()
     {
         CleanDatabaseJobFactory::new()
             ->query(DB::table('test_models'))
@@ -118,8 +113,7 @@ class CleansUpDatabaseTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_will_not_clean_if_it_cannot_get_the_lock()
+    public function test_it_will_not_clean_if_it_cannot_get_the_lock()
     {
         TestModel::factory()->count(10)->create();
 
@@ -141,8 +135,7 @@ class CleansUpDatabaseTest extends TestCase
         $this->assertSame(0, TestModel::count());
     }
 
-    /** @test */
-    public function the_job_can_be_serialized()
+    public function test_the_job_can_be_serialized()
     {
         $job = CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
@@ -152,8 +145,7 @@ class CleansUpDatabaseTest extends TestCase
         $this->assertIsString(serialize($job));
     }
 
-    /** @test */
-    public function it_respects_the_bindings()
+    public function test_it_respects_the_bindings()
     {
         TestModel::factory()->count(10)->create();
 
@@ -165,8 +157,7 @@ class CleansUpDatabaseTest extends TestCase
         $this->assertSame(9, TestModel::count());
     }
 
-    /** @test */
-    public function it_can_use_a_custom_database_cleanup_job_class()
+    public function test_it_can_use_a_custom_database_cleanup_job_class()
     {
         $job = CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
@@ -177,32 +168,28 @@ class CleansUpDatabaseTest extends TestCase
         $this->assertInstanceOf(ValidDatabaseCleanupJobClass::class, $job);
     }
 
-    /** @test */
-    public function it_throws_an_exception_if_an_invalid_job_class_is_used()
+    public function test_it_throws_an_exception_if_an_invalid_job_class_is_used()
     {
         $this->expectException(InvalidDatabaseCleanupJobClass::class);
 
         CleanDatabaseJobFactory::new()->jobClass(InvalidDatabaseCleanupJobTestClass::class);
     }
 
-    /** @test */
-    public function it_throws_an_exception_if_no_query_was_set()
+    public function test_it_throws_an_exception_if_no_query_was_set()
     {
         $this->expectException(CouldNotCreateJob::class);
 
         CleanDatabaseJobFactory::new()->dispatch();
     }
 
-    /** @test */
-    public function it_throws_an_exception_if_no_chunk_size_was_set()
+    public function test_it_throws_an_exception_if_no_chunk_size_was_set()
     {
         $this->expectException(CouldNotCreateJob::class);
 
         CleanDatabaseJobFactory::new()->query(TestModel::query())->dispatch();
     }
 
-    /** @test */
-    public function it_can_use_a_custom_connection()
+    public function test_it_can_use_a_custom_connection()
     {
         $config = CleanDatabaseJobFactory::new()
             ->query(TestModel::query())
@@ -213,8 +200,7 @@ class CleansUpDatabaseTest extends TestCase
         $this->assertEquals('test', $config->connection);
     }
 
-    /** @test */
-    public function it_can_delete_records_on_custom_connection()
+    public function test_it_can_delete_records_on_custom_connection()
     {
         TestModel::factory()->count(10)->create();
         TestModel::factory()->connection('sqliteSecondary')->count(10)->create();
