@@ -18,6 +18,8 @@ jobs:
         exclude:
           - laravel: 13.*
             php: 8.2
+          - laravel: 11.*
+            dependency-version: prefer-lowest
 
     services:
       redis:
