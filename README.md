@@ -29,7 +29,7 @@ By keeping the chunk size small, the query executes faster and potential table l
 
 ## Support us
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-queued-db-cleanup.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-queued-db-cleanup)
+[<img src="https://spatie.be/github-ad-image/laravel-queued-db-cleanup.jpg" width="419px" />](https://spatie.be/github-ad-click/laravel-queued-db-cleanup)
 
 We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
 
