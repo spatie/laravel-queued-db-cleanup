@@ -1,5 +1,7 @@
 <?php
 
+use Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob;
+
 return [
     /*
      * To make sure there's only one job of a particular cleanup running,
@@ -18,7 +20,7 @@ return [
      * This should be `Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob`
      * or a class that extends it.
      */
-    'clean_database_job_class' => Spatie\LaravelQueuedDbCleanup\Jobs\CleanDatabaseJob::class,
+    'clean_database_job_class' => CleanDatabaseJob::class,
 
     /*
      * In order to handle deadlocks on a high traffic table, the package can
