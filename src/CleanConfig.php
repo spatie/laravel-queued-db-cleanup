@@ -4,6 +4,7 @@ namespace Spatie\LaravelQueuedDbCleanup;
 
 use Closure;
 use Illuminate\Cache\Lock;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Laravel\SerializableClosure\SerializableClosure;
@@ -44,7 +45,7 @@ class CleanConfig
     }
 
     /**
-     * @param  \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder  $query
+     * @param  Builder|\Illuminate\Database\Eloquent\Builder  $query
      */
     public function usingQuery($query, int $chunkSize)
     {
@@ -126,7 +127,7 @@ class CleanConfig
         return Cache::store($this->lockCacheStore)->lock($this->lockName, $this->releaseLockAfterSeconds);
     }
 
-    /** @var \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder */
+    /** @var Builder|\Illuminate\Database\Eloquent\Builder */
     protected function convertQueryToLockName($query): string
     {
         return md5($query->toSql().print_r($query->getBindings(), true));

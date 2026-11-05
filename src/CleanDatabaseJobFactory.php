@@ -5,6 +5,7 @@ namespace Spatie\LaravelQueuedDbCleanup;
 use Closure;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\PendingBatch;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Bus;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\CouldNotCreateJob;
 use Spatie\LaravelQueuedDbCleanup\Exceptions\InvalidDatabaseCleanupJobClass;
@@ -14,7 +15,7 @@ class CleanDatabaseJobFactory
 {
     public CleanConfig $cleanConfig;
 
-    /** @param  \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder  $query */
+    /** @param  Builder|\Illuminate\Database\Eloquent\Builder  $query */
     public $query;
 
     public ?int $deleteChunkSize = null;
@@ -31,7 +32,7 @@ class CleanDatabaseJobFactory
         return new static($query);
     }
 
-    /** @param  \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder  $query */
+    /** @param  Builder|\Illuminate\Database\Eloquent\Builder  $query */
     public function __construct($query = null)
     {
         $this->jobClass = config('queued-db-cleanup.clean_database_job_class');
@@ -41,7 +42,7 @@ class CleanDatabaseJobFactory
         $this->query = $query;
     }
 
-    /** @param  \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder  $query */
+    /** @param  Builder|\Illuminate\Database\Eloquent\Builder  $query */
     public function query($query): self
     {
         $this->query = $query;
